@@ -1,0 +1,47 @@
+supabase.txt
+*.env
+*.env.local
+.DS_Store
+env
+node_modules
+
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# testing
+/coverage
+
+# next.js
+/internship-scraper/.next/
+/internship-scraper/out/
+
+# production
+/internship-scraper/build
+
+# misc
+/internship-scraper/.DS_Store
+*.pem
+
+# debug
+/internship-scraper/npm-debug.log*
+/internship-scraper/yarn-debug.log*
+/internship-scraper/yarn-error.log*
+
+# local env files
+.env*.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+*.env
+*.env.local
+

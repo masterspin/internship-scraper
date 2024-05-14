@@ -1,0 +1,35 @@
+{
+  "name": "internship-scraper",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@nextui-org/button": "^2.0.31",
+    "@supabase/auth-helpers-react": "^0.5.0",
+    "@supabase/supabase-auth-helpers": "^1.4.2",
+    "@tanstack/react-query": "^5.35.1",
+    "@tanstack/react-query-devtools": "^5.35.1",
+    "next": "14.2.3",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-icons": "^5.2.1",
+    "react-modal": "^3.16.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@types/react-modal": "^3.16.3",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.3",
+    "postcss": "^8",
+    "supabase": "^1.165.0",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
+}
