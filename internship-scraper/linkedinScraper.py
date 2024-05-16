@@ -33,7 +33,6 @@ swe_queries = [
 
 quant_queries = [
     "quantitative developer intern",
-    "quantitative research intern",
     "quantitative trading intern",
     "quantitative analysis intern"
 ]
@@ -94,7 +93,7 @@ def getJobData(jobType):
         if jobType == "QUANT" and not any(keyword in job_post["job_role"].lower() for keyword in ["quant", "trad", "analys"]):
             continue
 
-        if any(word in job_post["job_role"].lower() for word in ["supply chain", "trainee", "behavior", "sr", "senior", "tech lead", "market", "sale", "business", "mechanical", "benefit", "inclusion", "coordinator", "clearing", "electric", "design", "client", "legal", "tax", "social", "process", "accounting", "retail", "training", "customer", "administrative", "human resources", "operations analyst", "management", "apprentice"]):
+        if any(word in job_post["job_role"].lower() for word in ["supply chain", "trainee", "behavior", "sr", "senior", "tech lead", "market", "sale", "business", "mechanical", "benefit", "inclusion", "coordinator", "clearing", "electric", "design", "client", "legal", "tax", "social", "process", "accounting", "retail", "training", "customer", "administrative", "human resources", "operations analyst", "management", "apprentice", "unpaid", "phd", "civil engineer"]):
             continue
 
         try:
