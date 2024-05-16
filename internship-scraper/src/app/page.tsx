@@ -37,10 +37,10 @@ export default function Home() {
         const statusPromises = jobData.map(async (jobPost) => {
         try {
             const link = jobPost.job_link;
-            const id = data.id;
+            const id = data?.id;
             const { data: statusData, error } = await supabase.from('statuses').upsert({ user: id, job: link }).select().single();
-            return { ...jobPost, status: statusData.status };
-          } catch (error) {
+            return { ...jobPost, status: statusData?.status };
+          } catch (error:any) {
             console.error('Error fetching job status:', error.message);
             return { ...jobPost, status: 'Unknown' }; 
           }
@@ -63,14 +63,14 @@ export default function Home() {
             }
     
             setCustomJobPosts(customApplications);
-          } catch (error) {
+          } catch (error:any) {
             console.error('Error fetching custom applications:', error.message);
           }
         }
 
 
         setHasStatus(true);
-      } catch (error) {
+      } catch (error:any) {
         console.error('Error fetching job posts:', error.message);
       }
     };
@@ -120,7 +120,7 @@ const handleStatusChange = async (e: React.ChangeEvent<HTMLSelectElement>, jobId
       if (error) {
           throw error;
       }
-      } catch (error) {
+      } catch (error:any) {
           console.error('Error updating job status:', error.message);
       }
   }
