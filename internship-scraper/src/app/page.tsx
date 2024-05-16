@@ -15,9 +15,9 @@ const supabase = supabaseBrowser();
 
 export default function Home() {
 
-  const [jobPosts, setJobPosts] = useState([]);
+  const [jobPosts, setJobPosts] = useState<any[]>([]);
   const {customJobPosts, setCustomJobPosts} = useSharedFormState();
-  const [filteredJobPosts, setFilteredJobPosts] = useState([]);
+  const [filteredJobPosts, setFilteredJobPosts] = useState<any[]>([]);
   const [hasStatus, setHasStatus] = useState(false);
   const [selectedButton, setSelectedButton] = useState(0);
 
@@ -106,7 +106,7 @@ const handleStatusChange = async (e: React.ChangeEvent<HTMLSelectElement>, jobId
           if (error) {
               throw error;
           }
-      } catch (error) {
+      } catch (error:any) {
           console.error('Error updating job status:', error.message);
       }
   }

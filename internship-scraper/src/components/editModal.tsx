@@ -7,7 +7,7 @@ import useSharedFormState from '@/app/hook/useCustomJobPosts';
 
 const supabase = supabaseBrowser();
 
-const EditForm = ({ jobPost }) => {
+const EditForm: React.FC<{ jobPost: any }> = ({ jobPost }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { isFetching, data } = useUser();
   const { customJobPosts, setCustomJobPosts } = useSharedFormState();
@@ -28,12 +28,12 @@ const EditForm = ({ jobPost }) => {
     setIsOpen(false);
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e:any) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e:any) => {
     e.preventDefault();
     console.log(jobPost);
     if (data) {
@@ -77,7 +77,7 @@ const EditForm = ({ jobPost }) => {
 
         // setCustomJobPosts(updatedCustomJobPosts);
 
-      } catch (error) {
+      } catch (error:any) {
         console.error('Error upserting application data:', error.message);
       }
     }

@@ -7,7 +7,7 @@ import useSharedFormState from '@/app/hook/useCustomJobPosts';
 
 const supabase = supabaseBrowser();
 
-const DeleteForm = ({ jobPost }) => {
+const DeleteForm: React.FC<{ jobPost: any }> = ({ jobPost }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { isFetching, data } = useUser();
   const { customJobPosts, setCustomJobPosts } = useSharedFormState();
@@ -33,7 +33,7 @@ const DeleteForm = ({ jobPost }) => {
 
       // Close the modal
       closeModal();
-    } catch (error) {
+    } catch (error:any) {
       console.error('Error deleting application data:', error.message);
     }
   };

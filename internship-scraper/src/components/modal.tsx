@@ -46,7 +46,7 @@ const Form = () => {
 
             setCustomJobPosts([...customJobPosts, ...insertData]);
 
-        } catch (error) {
+        } catch (error:any) {
             console.error('Error upserting application data:', error.message);
         }
         
