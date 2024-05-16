@@ -11,33 +11,36 @@ export type Database = {
     Tables: {
       custom_applications: {
         Row: {
+          company_name: string | null
           date: string | null
           job_link: string
           job_role: string | null
           location: string | null
-          source: string
           status: string | null
+          user: string
         }
         Insert: {
+          company_name?: string | null
           date?: string | null
           job_link: string
           job_role?: string | null
           location?: string | null
-          source?: string
           status?: string | null
+          user?: string
         }
         Update: {
+          company_name?: string | null
           date?: string | null
           job_link?: string
           job_role?: string | null
           location?: string | null
-          source?: string
           status?: string | null
+          user?: string
         }
         Relationships: [
           {
-            foreignKeyName: "custom_applications_source_fkey"
-            columns: ["source"]
+            foreignKeyName: "custom_applications_user_fkey"
+            columns: ["user"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]

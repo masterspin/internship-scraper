@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { FaPlus } from "react-icons/fa";
 import { supabaseBrowser } from '@/lib/supabase/browser';
 import useUser from '@/app/hook/useUser';
+import useSharedFormState from '@/app/hook/useCustomJobPosts';
 
 const supabase = supabaseBrowser();
 
 const Form = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { isFetching, data } = useUser();
+  const {customJobPosts, setCustomJobPosts} = useSharedFormState();
 
   const openModal = () => {
     setIsOpen(true);
@@ -31,15 +33,19 @@ const Form = () => {
                 .from('custom_applications')
                 .upsert({
                     job_link: String(formData.get('jobLink')),
-                    source: data.id,
+                    user: data.id,
                     job_role: String(formData.get('jobRole')),
+                    company_name: String(formData.get('companyName')),
                     location: String(formData.get('location')),
                     status: String(formData.get('status')),
                     date: `${month}-${day}-${year}`
-                });
+                }).select();
             if (error) {
                 throw error;
             }
+
+            setCustomJobPosts([...customJobPosts, ...insertData]);
+
         } catch (error) {
             console.error('Error upserting application data:', error.message);
         }
@@ -136,7 +142,7 @@ const Form = () => {
                 </button>
                 <button
                 onClick={closeModal}
-                className="border- border-gray-600 border-2 border-solid hover:bg-red-600 text-gray-100 font-bold py-1 px-3 rounded-lg text-sm font-semibold"
+                className="border- border-gray-600 border-2 border-solid hover:bg-gray-600 text-gray-100 font-bold py-1 px-3 rounded-lg text-sm font-semibold"
                 >
                 Close
                 </button>

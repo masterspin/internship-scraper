@@ -3,6 +3,9 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Header from '@/components/header';
 import Form from '@/components/modal';
+import EditForm from '@/components/editModal';
+import DeleteForm from '@/components/deleteModal';
+import useSharedFormState from '@/app/hook/useCustomJobPosts';
 
 import { supabaseBrowser } from '@/lib/supabase/browser';
 import useUser from '@/app/hook/useUser';
@@ -13,7 +16,7 @@ const supabase = supabaseBrowser();
 export default function Home() {
 
   const [jobPosts, setJobPosts] = useState([]);
-  const [customJobPosts, setCustomJobPosts] = useState([]);
+  const {customJobPosts, setCustomJobPosts} = useSharedFormState();
   const [filteredJobPosts, setFilteredJobPosts] = useState([]);
   const [hasStatus, setHasStatus] = useState(false);
   const [selectedButton, setSelectedButton] = useState(0);
@@ -49,7 +52,20 @@ export default function Home() {
 
         
         if(data){
-          
+          try {
+            const { data: customApplications, error } = await supabase
+                .from('custom_applications')
+                .select('*')
+                .eq('user', data.id);
+    
+            if (error) {
+                throw error;
+            }
+    
+            setCustomJobPosts(customApplications);
+          } catch (error) {
+            console.error('Error fetching custom applications:', error.message);
+          }
         }
 
 
@@ -74,7 +90,14 @@ const handleStatusChange = async (e: React.ChangeEvent<HTMLSelectElement>, jobId
       return jobPost;
   }));
 
-  if (data) {
+  setCustomJobPosts(customJobPosts.map(jobPost => {
+    if (jobPost.job_link === jobId) {
+      jobPost.status = newStatus;
+    }
+    return jobPost;
+  }));
+
+  if (data && selectedButton !== 3) {
       try {
           const { data: updateData, error } = await supabase
               .from('statuses')
@@ -87,6 +110,21 @@ const handleStatusChange = async (e: React.ChangeEvent<HTMLSelectElement>, jobId
           console.error('Error updating job status:', error.message);
       }
   }
+
+  if(data && selectedButton === 3){
+    try {
+      const { data: updateData, error } = await supabase
+          .from('custom_applications')
+          .upsert({ user: data.id, job_link: jobId, status: newStatus })
+          .select('*');
+      if (error) {
+          throw error;
+      }
+      } catch (error) {
+          console.error('Error updating job status:', error.message);
+      }
+  }
+
 };
 
 const handleSourceClick = (index: number) => {
@@ -120,7 +158,7 @@ const handleSourceClick = (index: number) => {
 
 useEffect(() => {
   handleSourceClick(selectedButton);
-}, [jobPosts]);
+}, [jobPosts, customJobPosts]);
 
 
   if(isFetching){
@@ -180,9 +218,11 @@ useEffect(() => {
           <table className="w-full table-auto border-collapse">
             <thead>
               <tr className="bg-gray-100 dark:bg-gray-800">
+                {data && selectedButton === 3 && (<th className="px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400"></th>)}
                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Role</th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Company</th>
                 {selectedButton == 0 && (<th className="px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Job Type</th>)}
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Location</th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Date</th>
                 {data && (
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Status</th>
@@ -192,6 +232,12 @@ useEffect(() => {
             <tbody>
               {filteredJobPosts.map((filteredJobPosts:any) => (
                 <tr key={filteredJobPosts.id} className="border-b border-gray-200 dark:border-gray-700">
+                  {data && selectedButton === 3 && (
+                    <div className="flex space-x-4">
+                      <DeleteForm jobPost={filteredJobPosts} />
+                      <EditForm jobPost={filteredJobPosts} />
+                    </div>                  
+                  )}
                   <td className="px-4 py-3 text-sm font-medium">
                     <Link
                       href={filteredJobPosts.job_link}
@@ -203,6 +249,7 @@ useEffect(() => {
                   </td>
                   <td className="px-4 py-3 text-sm">{filteredJobPosts.company_name}</td>
                   {selectedButton == 0 && (<td className="px-4 py-3 text-sm">{filteredJobPosts.job_type}</td>)}
+                  <td className="px-4 py-3 text-sm">{filteredJobPosts.location}</td>
                   <td className="px-4 py-3 text-sm">{filteredJobPosts.date}</td>
                   {data && (
                     <td className="px-4 py-3 text-sm">

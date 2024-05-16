@@ -27,7 +27,6 @@ def githubScraper(repoLink, repoName):
         if(len(links) > 0):
             job_link_exists = any(links[0].get("href") == item.get('job_link') for item in current_database)
             if(not job_link_exists):
-                print(job_link_exists)
                 job_post = {}
                 try:
                     job_post["job_link"] = links[0].get("href")
@@ -56,12 +55,24 @@ def githubScraper(repoLink, repoName):
                     job_post["source"] = repoName
                 except:
                     job_post["source"] = ""
-                
-                try:
-                    job_post["location"] = internship_details[2].string
-                except:
-                    job_post["location"] = ""
-                
+
+
+                details_element = internship_details[2].find("details")
+                if details_element:
+                    summary_element = details_element.find("summary")
+                    if summary_element:
+                        text_after_summary = "\n".join([str(sibling) for sibling in summary_element.next_siblings if sibling.name is None])
+                        try:
+                            job_post["location"] = text_after_summary
+                        except:
+                            job_post["location"] = ""
+                else:
+                    try:
+                        text = internship_details[2].get_text(separator="\n")
+                        job_post["location"] = text
+                    except:
+                        job_post["location"] = ""
+                    
                 try:
                     job_post["date"] = date
                 except:

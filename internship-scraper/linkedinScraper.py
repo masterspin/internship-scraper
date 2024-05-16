@@ -129,36 +129,21 @@ def getJobData(jobType):
 
 
 
-# for sweJob in swe_queries:
-#     parseQuery(sweJob)
+for sweJob in swe_queries:
+    parseQuery(sweJob)
 
-# getJobData("SWE")
+getJobData("SWE")
 
-# print("got job data for SWE")
+print("got job data for SWE")
 
-# job_id_list =[]
-
-# for quantJob in quant_queries:
-#     parseQuery(quantJob)
-
-# getJobData("QUANT")
-
-# print("got job data for QUANT")
-
-# print(job_post_data)
-
-# for job_post in job_post_data:
-#     try:
-#         data, count = supabase.table('posts').insert(job_post).execute()
-#     except Exception as e:
-#         print(f"Error inserting job post: {e}")
-
-
-parseQuery("business intern")
-getJobData("BUS")
 job_id_list =[]
-parseQuery("quant dev intern")
+
+for quantJob in quant_queries:
+    parseQuery(quantJob)
+
 getJobData("QUANT")
+
+print("got job data for QUANT")
 
 print(job_post_data)
 
@@ -167,6 +152,21 @@ for job_post in job_post_data:
         data, count = supabase.table('posts').insert(job_post).execute()
     except Exception as e:
         print(f"Error inserting job post: {e}")
+
+
+# parseQuery("business intern")
+# getJobData("BUS")
+# job_id_list =[]
+# parseQuery("quant dev intern")
+# getJobData("QUANT")
+
+# print(job_post_data)
+
+# for job_post in job_post_data:
+#     try:
+#         data, count = supabase.table('posts').insert(job_post).execute()
+#     except Exception as e:
+#         print(f"Error inserting job post: {e}")
 
 
 ################################################################################################################################################################################################################################
