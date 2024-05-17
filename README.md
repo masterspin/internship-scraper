@@ -50,7 +50,14 @@ Visit the live site: [ritij.tech](https://www.ritij.tech/)
     NEXT_PUBLIC_SERVICE_ROLE_KEY=your_supabase_anon_key
     ```
 
-4. **Start the development server:**
+4. **Run the Python scrapers:**
+    Ensure you have Python and the required libraries installed. Then run:
+    ```bash
+    python3 linkedinScraper.py
+    python3 pittCSCScraper.py
+    ```
+
+5. **Start the development server:**
     ```bash
     npm run dev
     ```
