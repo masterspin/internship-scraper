@@ -50,12 +50,7 @@ Visit the live site: [ritij.tech](https://www.ritij.tech/)
     NEXT_PUBLIC_SERVICE_ROLE_KEY=your_supabase_anon_key
     ```
 
-4. **Run database migrations:**
-    ```bash
-    npm run migrate
-    ```
-
-5. **Start the development server:**
+4. **Start the development server:**
     ```bash
     npm run dev
     ```
