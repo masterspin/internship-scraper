@@ -56,6 +56,7 @@ export type Database = {
           job_type: string | null
           location: string | null
           source: string
+          term: string | null
         }
         Insert: {
           company_name?: string | null
@@ -65,6 +66,7 @@ export type Database = {
           job_type?: string | null
           location?: string | null
           source?: string
+          term?: string | null
         }
         Update: {
           company_name?: string | null
@@ -74,6 +76,7 @@ export type Database = {
           job_type?: string | null
           location?: string | null
           source?: string
+          term?: string | null
         }
         Relationships: []
       }

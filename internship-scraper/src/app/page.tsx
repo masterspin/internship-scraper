@@ -97,7 +97,7 @@ const handleStatusChange = async (e: React.ChangeEvent<HTMLSelectElement>, jobId
     return jobPost;
   }));
 
-  if (data && selectedButton !== 3) {
+  if (data && selectedButton !== 4) {
       try {
           const { data: updateData, error } = await supabase
               .from('statuses')
@@ -111,7 +111,7 @@ const handleStatusChange = async (e: React.ChangeEvent<HTMLSelectElement>, jobId
       }
   }
 
-  if(data && selectedButton === 3){
+  if(data && selectedButton === 4){
     try {
       const { data: updateData, error } = await supabase
           .from('custom_applications')
@@ -135,7 +135,7 @@ const handleSourceClick = (index: number) => {
   if (jobPosts) {
     switch (index) {
       case 0:
-        filteredData = jobPosts.filter(jobPost => jobPost.source === 'LinkedIn');
+        filteredData = jobPosts.filter(jobPost => jobPost.source === 'LinkedIn' && jobPost.job_type === 'SWE');
         break;
       case 1:
         filteredData = jobPosts.filter(jobPost => jobPost.source === 'PittCSC');
@@ -144,7 +144,16 @@ const handleSourceClick = (index: number) => {
         filteredData = jobPosts.filter(jobPost => jobPost.source === 'Ouckah');
         break;
       case 3:
+        filteredData = jobPosts.filter(jobPost => jobPost.source === 'PittCSC Off-Season');
+        break;
+      case 4:
         filteredData = customJobPosts;
+        break;
+      case 5:
+        filteredData = jobPosts.filter(jobPost => jobPost.source === 'LinkedIn' && jobPost.job_type === 'QUANT');
+        break;
+      case 6:
+        filteredData = jobPosts.filter(jobPost => jobPost.source === 'LinkedIn' && jobPost.job_type === 'BUS');
         break;
       default:
         filteredData = [...jobPosts];
@@ -179,7 +188,25 @@ useEffect(() => {
               }`}
             >
               <FaLinkedin size={16} />
-              <span>LinkedIn</span>
+              <span>LinkedIn - SWE</span>
+            </button>
+            <button
+              onClick={() => handleSourceClick(5)}
+              className={`text-sm w-full md:w-auto px-2 py-2 border border-solid border-blue-600 font-semibold text-gray-300 rounded-lg shadow-md flex items-center justify-center space-x-2 ${
+                selectedButton === 5 ? 'bg-blue-600 hover:bg-blue-600' : 'hover:bg-blue-600'
+              }`}
+            >
+              <FaLinkedin size={16} />
+              <span>LinkedIn - QUANT</span>
+            </button>
+            <button
+              onClick={() => handleSourceClick(6)}
+              className={`text-sm w-full md:w-auto px-2 py-2 border border-solid border-blue-600 font-semibold text-gray-300 rounded-lg shadow-md flex items-center justify-center space-x-2 ${
+                selectedButton === 6 ? 'bg-blue-600 hover:bg-blue-600' : 'hover:bg-blue-600'
+              }`}
+            >
+              <FaLinkedin size={16} />
+              <span>LinkedIn - BUS</span>
             </button>
             <button
               onClick={() => handleSourceClick(1)}
@@ -188,7 +215,7 @@ useEffect(() => {
               }`}
             >
               <FaGithub size={16} />
-              <span>PittCSC & Simplify</span>
+              <span>PittCSC</span>
             </button>
             <button
               onClick={() => handleSourceClick(2)}
@@ -197,20 +224,29 @@ useEffect(() => {
               }`}
             >
               <FaGithub size={16} />
-              <span>Ouckah & CSCareers</span>
+              <span>Ouckah</span>
+            </button>
+            <button
+              onClick={() => handleSourceClick(3)}
+              className={`text-sm w-full md:w-auto px-2 py-2 border border-solid border-green-600 font-semibold text-gray-300 rounded-lg shadow-md flex items-center justify-center space-x-2 ${
+                selectedButton === 3 ? 'bg-green-600 hover:bg-green-600' : 'hover:bg-green-600'
+              }`}
+            >
+              <FaGithub size={16} />
+              <span>PittCSC Off-Season</span>
             </button>
             {data && (<button
-              onClick={() => handleSourceClick(3)}
+              onClick={() => handleSourceClick(4)}
               className={`text-sm w-full md:w-auto px-2 py-2 border border-solid border-red-600 font-semibold text-gray-300 rounded-lg shadow-md flex items-center justify-center space-x-2 ${
-                selectedButton === 3 ? 'bg-red-600 hover:bg-red-600' : 'hover:bg-red-600'
+                selectedButton === 4 ? 'bg-red-600 hover:bg-red-600' : 'hover:bg-red-600'
               }`}
             >
               <FaFile size={16} />
-              <span>My Applications</span>
+              <span>Personal Applications</span>
             </button>
           )}
           </div>
-          {data && selectedButton === 3 &&
+          {data && selectedButton === 4 &&
             (<Form />)
           }
         </div>
@@ -218,11 +254,11 @@ useEffect(() => {
           <table className="w-full table-auto border-collapse">
             <thead>
               <tr className="bg-gray-100 dark:bg-gray-800">
-                {data && selectedButton === 3 && (<th className="px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400"></th>)}
+                {data && selectedButton === 4 && (<th className="px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400"></th>)}
                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Role</th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Company</th>
-                {selectedButton == 0 && (<th className="px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Job Type</th>)}
                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Location</th>
+                {selectedButton == 3 && (<th className="px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Term</th>)}
                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Date</th>
                 {data && (
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Status</th>
@@ -232,7 +268,7 @@ useEffect(() => {
             <tbody>
               {filteredJobPosts.map((filteredJobPosts:any) => (
                 <tr key={filteredJobPosts.id} className="border-b border-gray-200 dark:border-gray-700">
-                  {data && selectedButton === 3 && (
+                  {data && selectedButton === 4 && (
                     <div className="flex space-x-4">
                       <DeleteForm jobPost={filteredJobPosts} />
                       <EditForm jobPost={filteredJobPosts} />
@@ -248,8 +284,8 @@ useEffect(() => {
                     </Link>
                   </td>
                   <td className="px-4 py-3 text-sm">{filteredJobPosts.company_name}</td>
-                  {selectedButton == 0 && (<td className="px-4 py-3 text-sm">{filteredJobPosts.job_type}</td>)}
                   <td className="px-4 py-3 text-sm">{filteredJobPosts.location}</td>
+                  {selectedButton == 3 && (<td className="px-4 py-3 text-sm">{filteredJobPosts.term}</td>)}
                   <td className="px-4 py-3 text-sm">{filteredJobPosts.date}</td>
                   {data && (
                     <td className="px-4 py-3 text-sm">

@@ -42,7 +42,7 @@ const Header = () => {
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between">
           <Link href="/" className="text-white text-xl font-bold">
-            2025 SWE/Quant Internships
+            2025 SWE/Quant/Bus Internships
           </Link>
           <div>
             {!data?.id ?
