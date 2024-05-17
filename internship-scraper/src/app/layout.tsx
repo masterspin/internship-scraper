@@ -6,7 +6,7 @@ import QueryProvider from "@/components/query-provider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "SWE/Quant/Bus Internship Scraper 2024-2025",
+  title: "SWE/Quant/Bus Internship Scraper & Manager for 2024-2025",
   description: "Created by Ritij",
 };
 
