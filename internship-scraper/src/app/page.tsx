@@ -188,7 +188,7 @@ useEffect(() => {
               }`}
             >
               <FaLinkedin size={16} />
-              <span>LinkedIn - SWE</span>
+              <span>SWE</span>
             </button>
             <button
               onClick={() => handleSourceClick(5)}
@@ -197,7 +197,7 @@ useEffect(() => {
               }`}
             >
               <FaLinkedin size={16} />
-              <span>LinkedIn - QUANT</span>
+              <span>QUANT</span>
             </button>
             <button
               onClick={() => handleSourceClick(6)}
@@ -206,7 +206,7 @@ useEffect(() => {
               }`}
             >
               <FaLinkedin size={16} />
-              <span>LinkedIn - BUS</span>
+              <span>BUS</span>
             </button>
             <button
               onClick={() => handleSourceClick(1)}
