@@ -133,27 +133,52 @@ const handleSourceClick = (index: number) => {
   setHasStatus(false);
   let filteredData = [];
   if (jobPosts) {
+    const currentYear = new Date().getFullYear();
     switch (index) {
       case 0:
-        filteredData = jobPosts.filter(jobPost => jobPost.source === 'LinkedIn' && jobPost.job_type === 'SWE');
+        filteredData = jobPosts.filter(jobPost => jobPost.source === 'LinkedIn' && jobPost.job_type === 'SWE').sort((a, b) => {
+          const dateA:any = new Date(a.date);
+          const dateB:any = new Date(b.date);
+          return dateB - dateA;
+        });
         break;
       case 1:
-        filteredData = jobPosts.filter(jobPost => jobPost.source === 'PittCSC');
+        filteredData = jobPosts.filter(jobPost => jobPost.source === 'PittCSC').sort((a, b) => {
+          const dateA:any = new Date(`${a.date} ${currentYear}`);
+          const dateB:any = new Date(`${b.date} ${currentYear}`);
+          return dateB - dateA;
+      });
         break;
       case 2:
-        filteredData = jobPosts.filter(jobPost => jobPost.source === 'Ouckah');
+        filteredData = jobPosts.filter(jobPost => jobPost.source === 'Ouckah').sort((a, b) => {
+          const dateA:any = new Date(`${a.date} ${currentYear}`);
+          const dateB:any = new Date(`${b.date} ${currentYear}`);
+          return dateB - dateA;
+      });
         break;
       case 3:
-        filteredData = jobPosts.filter(jobPost => jobPost.source === 'PittCSC Off-Season');
+        filteredData = jobPosts.filter(jobPost => jobPost.source === 'PittCSC Off-Season').sort((a, b) => {
+          const dateA:any = new Date(`${a.date} ${currentYear}`);
+          const dateB:any = new Date(`${b.date} ${currentYear}`);
+          return dateB - dateA;
+      });
         break;
       case 4:
         filteredData = customJobPosts;
         break;
       case 5:
-        filteredData = jobPosts.filter(jobPost => jobPost.source === 'LinkedIn' && jobPost.job_type === 'QUANT');
+        filteredData = jobPosts.filter(jobPost => jobPost.source === 'LinkedIn' && jobPost.job_type === 'QUANT').sort((a, b) => {
+          const dateA:any = new Date(a.date);
+          const dateB:any = new Date(b.date);
+          return dateB - dateA;
+        });
         break;
       case 6:
-        filteredData = jobPosts.filter(jobPost => jobPost.source === 'LinkedIn' && jobPost.job_type === 'BUS');
+        filteredData = jobPosts.filter(jobPost => jobPost.source === 'LinkedIn' && jobPost.job_type === 'BUS').sort((a, b) => {
+          const dateA = new Date(a.date);
+          const dateB = new Date(b.date);
+          return dateB - dateA;
+        });
         break;
       default:
         filteredData = [...jobPosts];
