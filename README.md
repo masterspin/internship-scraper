@@ -54,7 +54,7 @@ Visit the live site: [ritij.tech](https://www.ritij.tech/)
     Ensure you have Python and the required libraries installed. Then run:
     ```bash
     python3 linkedinScraper.py
-    python3 pittCSCScraper.py
+    python3 githubScraper.py
     ```
 
 5. **Start the development server:**
