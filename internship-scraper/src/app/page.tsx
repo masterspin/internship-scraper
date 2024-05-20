@@ -164,7 +164,11 @@ const handleSourceClick = (index: number) => {
       });
         break;
       case 4:
-        filteredData = customJobPosts;
+        filteredData = customJobPosts.sort((a, b) => {
+          const dateA:any = new Date(a.date);
+          const dateB:any = new Date(b.date);
+          return dateB - dateA;
+        });
         break;
       case 5:
         filteredData = jobPosts.filter(jobPost => jobPost.source === 'LinkedIn' && jobPost.job_type === 'QUANT').sort((a, b) => {
@@ -175,8 +179,8 @@ const handleSourceClick = (index: number) => {
         break;
       case 6:
         filteredData = jobPosts.filter(jobPost => jobPost.source === 'LinkedIn' && jobPost.job_type === 'BUS').sort((a, b) => {
-          const dateA = new Date(a.date);
-          const dateB = new Date(b.date);
+          const dateA:any = new Date(a.date);
+          const dateB:any = new Date(b.date);
           return dateB - dateA;
         });
         break;
