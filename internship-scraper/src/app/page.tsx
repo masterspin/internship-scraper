@@ -321,12 +321,12 @@ useEffect(() => {
                       <select className={`bg-transparent border border-gray-300 rounded-md py-2 outline-none
                           ${filteredJobPosts.status === 'Not Applied' ? 'text-gray-600' : ''}
                           ${filteredJobPosts.status === 'Applied' ? 'text-white-600' : ''}
-                          ${filteredJobPosts.status === 'OA Received' ? 'text-white-600' : ''}
+                          ${filteredJobPosts.status === 'OA Received' ? 'text-purple-500' : ''}
                           ${filteredJobPosts.status === 'Interview Scheduled' ? 'text-blue-600' : ''}
                           ${filteredJobPosts.status === 'Waitlisted' ? 'text-yellow-600' : ''}
                           ${filteredJobPosts.status === 'Rejected' ? 'text-red-600' : ''}
                           ${filteredJobPosts.status === 'Offer Received' ? 'text-green-600' : ''}
-                          ${filteredJobPosts.status === 'Accepted' ? 'text-green-300' : ''}`}
+                          ${filteredJobPosts.status === 'Accepted' ? 'text-emerald-400' : ''}`}
 
                         value={filteredJobPosts.status}
                         onChange={(e) => handleStatusChange(e, filteredJobPosts.job_link)}>
