@@ -80,8 +80,6 @@ export default function Home() {
 //NEED TO DO 'thiS
 const handleStatusChange = async (e: React.ChangeEvent<HTMLSelectElement>, jobId: string) => {
   const newStatus = e.target.value;
-
-  console.log(newStatus);
   // Update the jobPosts state with the new status for the job post with the matching ID
   setJobPosts(jobPosts.map(jobPost => {
       if (jobPost.job_link === jobId) {
@@ -128,7 +126,6 @@ const handleStatusChange = async (e: React.ChangeEvent<HTMLSelectElement>, jobId
 };
 
 const handleSourceClick = (index: number) => {
-  console.log("called");
   setSelectedButton(index);
   setHasStatus(false);
   let filteredData = [];
@@ -190,7 +187,6 @@ const handleSourceClick = (index: number) => {
     }
     setFilteredJobPosts(filteredData);
     setHasStatus(true);
-    console.log(filteredData);
   }
 };
 
