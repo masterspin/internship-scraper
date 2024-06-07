@@ -4,7 +4,7 @@
 
 This project is a comprehensive solution for scraping and managing internship and co-op listings for the 2024-2025 school year. It focuses on positions in software engineering (SWE), quantitative analysis (Quant), and business domains. The scraper collects listings from LinkedIn, the Pitt CSC & Simplify GitHub repository, and the Ouckah & CSCareers GitHub repository. The platform also incorporates Google OAuth for seamless user management.
 
-Visit the [website (ritij.tech)](https://www.ritij.tech/)
+[Visit the website (ritij.tech)](https://www.ritij.tech/)
 
 ## Features
 
