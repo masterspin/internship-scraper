@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project is a comprehensive solution for scraping and managing internship and co-op listings for the 2024-2025 school year. It focuses on positions in software engineering (SWE), quantitative analysis (Quant), and business domains. The scraper collects listings from LinkedIn, the Pitt CSC & Simplify GitHub repository, and the Ouckah & CSCareers GitHub repository. The platform also incorporates Google OAuth for seamless user management.
+This project is a comprehensive solution for scraping and managing internship and co-op listings for the 2024-2025 school year. It focuses on positions in software engineering (SWE), quantitative trading (Quant), and business domains. The scraper collects listings from LinkedIn, the Pitt CSC & Simplify GitHub repository, and the Ouckah & CSCareers GitHub repository. The platform also incorporates Google OAuth for seamless user management.
 
 [Visit the website (ritij.tech)](https://www.ritij.tech/)
 
@@ -15,7 +15,7 @@ This project is a comprehensive solution for scraping and managing internship an
 
 ## Tech Stack
 
-- **Frontend**: React, TypeScript, Next.js
+- **Frontend**: React, TypeScript, Next.js, TailwindCSS
 - **Database**: PostgreSQL, Supabase
 - **Scraping Tools**: Beautiful Soup, asyncio, aiohttp
 - **Authentication**: Google OAuth 2.0
@@ -66,7 +66,7 @@ This project is a comprehensive solution for scraping and managing internship an
 
 1. **Log in with Google:**
    - Navigate to the homepage.
-   - Click on the "Login with Google" button to authenticate.
+   - Click on the "Sign In" button to authenticate.
 
 2. **Scrape internships:**
    - Use the provided options to initiate scraping from LinkedIn, PittCSC GitHub, and Ouckah GitHub.
@@ -74,7 +74,7 @@ This project is a comprehensive solution for scraping and managing internship an
 
 3. **Save and track applications:**
    - Keep track of your applications directly on the platform.
-   - Add your own interesting job postings.
+   - Add your own personal job postings.
 
 ## Contributing
 
