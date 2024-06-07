@@ -23,7 +23,7 @@ for entry in current_database:
     oldLink = link
     print(link)
     link = "https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/" + link.split('/')[-1]
-    response = response = requests.get(link)
+    response = requests.get(link)
     retries = 0
     while(response.status_code != 200 and retries < MAX_RETRIES):
         print("HELP")
@@ -32,7 +32,10 @@ for entry in current_database:
             
 
     if(response.status_code != 200):
-        job_list.append(oldLink)
+        statuses = supabase.table('statuses').select('*').eq('job', oldLink).execute().data
+        filtered_count = len([status for status in statuses if status.get('status') != 'Not Applied'])
+        if(filtered_count == 0):
+                job_list.append(oldLink)
     else:
         data = response.text
         soup = BeautifulSoup(data, "html.parser")
