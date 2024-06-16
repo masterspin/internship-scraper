@@ -14,9 +14,12 @@ supabase: Client = create_client(url, key)
 
 
 current_database = supabase.table('posts').select('*').eq('source', 'LinkedIn').execute().data
+
+print(len(current_database))
+
 job_list = []
 
-MAX_RETRIES = 20
+MAX_RETRIES = 25
 
 for entry in current_database:
     link = entry.get('job_link')
@@ -27,6 +30,7 @@ for entry in current_database:
     retries = 0
     while(response.status_code != 200 and retries < MAX_RETRIES):
         print("HELP")
+        time.sleep(0.15)
         response = requests.get(link)
         retries+=1
             

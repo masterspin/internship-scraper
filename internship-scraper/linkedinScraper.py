@@ -19,7 +19,6 @@ swe_queries = [
     "AI/machine learning intern",
     "mobile engineer intern",
     "full stack developer intern",
-    "frontend developer intern",
     "cloud engineer intern",
     "systems engineer intern",
     "computer vision intern",
