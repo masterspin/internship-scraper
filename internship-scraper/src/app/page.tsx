@@ -18,11 +18,12 @@ export default function Home() {
   const [jobPosts, setJobPosts] = useState<any[]>([]);
   const {customJobPosts, setCustomJobPosts} = useSharedFormState();
   const [filteredJobPosts, setFilteredJobPosts] = useState<any[]>([]);
+  const [shownPosts, setShownPosts] = useState<any[]>([]);
   const [hasStatus, setHasStatus] = useState(false);
   const [selectedButton, setSelectedButton] = useState(0);
+  const [filterOption, setFilterOption] = useState("All");
 
   const { isFetching, data } = useUser();
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -185,14 +186,58 @@ const handleSourceClick = (index: number) => {
         filteredData = [...jobPosts];
         break;
     }
+    setFilterOption("All");
     setFilteredJobPosts(filteredData);
     setHasStatus(true);
   }
 };
 
+const handleFilterClick = (value : string) => {
+  setFilterOption(value);
+  setHasStatus(false);
+  let shownData = [];
+  if (filteredJobPosts) {
+    switch (value) {
+      case "Not Applied":
+        shownData = filteredJobPosts.filter(jobPost => jobPost.status === 'Not Applied');
+        break;
+      case "Applied":
+        shownData = filteredJobPosts.filter(jobPost => jobPost.status === 'Applied');
+        break;
+      case "OA Received":
+        shownData = filteredJobPosts.filter(jobPost => jobPost.status === 'OA Received');
+        break;
+      case "Interview Scheduled":
+        shownData = filteredJobPosts.filter(jobPost => jobPost.status === 'Interview Scheduled');
+        break;
+      case "Waitlisted":
+        shownData = filteredJobPosts.filter(jobPost => jobPost.status === 'Waitlisted');
+        break;
+      case "Rejected":
+        shownData = filteredJobPosts.filter(jobPost => jobPost.status === 'Rejected');
+        break;
+      case "Offer Received":
+        shownData = filteredJobPosts.filter(jobPost => jobPost.status === 'Offer Recevied');
+        break;
+      case "Accepted":
+        shownData = filteredJobPosts.filter(jobPost => jobPost.status === 'Accepted');
+        break;
+      default:
+        shownData = filteredJobPosts;
+        break;
+    }
+    setShownPosts(shownData);
+    setHasStatus(true);
+  }
+}
+
 useEffect(() => {
   handleSourceClick(selectedButton);
 }, [jobPosts, customJobPosts]);
+
+useEffect(() => {
+  handleFilterClick(filterOption);
+}, [filteredJobPosts]);
 
 
   if(isFetching){
@@ -275,6 +320,23 @@ useEffect(() => {
             (<Form />)
           }
         </div>
+        <div>
+        {data && (
+          <div className="flex flex-col md:flex-row justify-start relative my-4 max-w-40">
+            <select value={filterOption} onChange={e => handleFilterClick(e.target.value)} id="underline_select" className="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 peer">
+              <option value="All">All</option>
+              <option value="Not Applied">Not Applied</option>
+              <option value="Applied">Applied</option>
+              <option value="OA Received">OA Received</option>
+              <option value="Interview Scheduled">Interview Scheduled</option>
+              <option value="Waitlisted">Waitlisted</option>
+              <option value="Rejected">Rejected</option>
+              <option value="Offer Received">Offer Received</option>
+              <option value="Accepted">Accepted</option>
+            </select>
+          </div>
+        )}
+        </div>
         <div className="overflow-x-auto">
           <table className="w-full table-auto border-collapse">
             <thead>
@@ -291,44 +353,44 @@ useEffect(() => {
               </tr>
             </thead>
             <tbody>
-              {filteredJobPosts.map((filteredJobPosts:any) => (
-                <tr key={filteredJobPosts.id} className="border-b border-gray-200 dark:border-gray-700">
+              {shownPosts.map((shownPosts:any) => (
+                <tr key={shownPosts.id} className="border-b border-gray-200 dark:border-gray-700">
                   {data && selectedButton === 4 && (
                     <div className="flex space-x-4">
-                      <DeleteForm jobPost={filteredJobPosts} />
-                      <EditForm jobPost={filteredJobPosts} />
+                      <DeleteForm jobPost={shownPosts} />
+                      <EditForm jobPost={shownPosts} />
                     </div>                  
                   )}
                   <td className="px-4 py-3 text-sm font-medium">
                     <Link
-                      href={filteredJobPosts.job_link}
+                      href={shownPosts.job_link}
                       target="_blank"
                       className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
                     >
-                      {filteredJobPosts.job_role}
+                      {shownPosts.job_role}
                     </Link>
                   </td>
-                  <td className="px-4 py-3 text-sm">{filteredJobPosts.company_name}</td>
-                  <td className="px-4 py-3 text-sm">{filteredJobPosts.location}</td>
-                  {selectedButton == 3 && (<td className="px-4 py-3 text-sm">{filteredJobPosts.term}</td>)}
-                  <td className="px-4 py-3 text-sm">{filteredJobPosts.date}</td>
+                  <td className="px-4 py-3 text-sm">{shownPosts.company_name}</td>
+                  <td className="px-4 py-3 text-sm">{shownPosts.location}</td>
+                  {selectedButton == 3 && (<td className="px-4 py-3 text-sm">{shownPosts.term}</td>)}
+                  <td className="px-4 py-3 text-sm">{shownPosts.date}</td>
                   {data && (
                     <td className="px-4 py-3 text-sm">
                       <select className={`bg-transparent border border-gray-300 rounded-md py-2 outline-none
-                          ${filteredJobPosts.status === 'Not Applied' ? 'text-gray-600' : ''}
-                          ${filteredJobPosts.status === 'Applied' ? 'text-white-600' : ''}
-                          ${filteredJobPosts.status === 'OA Received' ? 'text-purple-500' : ''}
-                          ${filteredJobPosts.status === 'Interview Scheduled' ? 'text-blue-600' : ''}
-                          ${filteredJobPosts.status === 'Waitlisted' ? 'text-yellow-600' : ''}
-                          ${filteredJobPosts.status === 'Rejected' ? 'text-red-600' : ''}
-                          ${filteredJobPosts.status === 'Offer Received' ? 'text-green-600' : ''}
-                          ${filteredJobPosts.status === 'Accepted' ? 'text-emerald-400' : ''}`}
+                          ${shownPosts.status === 'Not Applied' ? 'text-gray-600' : ''}
+                          ${shownPosts.status === 'Applied' ? 'text-white-600' : ''}
+                          ${shownPosts.status === 'OA Received' ? 'text-purple-500' : ''}
+                          ${shownPosts.status === 'Interview Scheduled' ? 'text-blue-600' : ''}
+                          ${shownPosts.status === 'Waitlisted' ? 'text-yellow-600' : ''}
+                          ${shownPosts.status === 'Rejected' ? 'text-red-600' : ''}
+                          ${shownPosts.status === 'Offer Received' ? 'text-green-600' : ''}
+                          ${shownPosts.status === 'Accepted' ? 'text-emerald-400' : ''}`}
 
-                        value={filteredJobPosts.status}
-                        onChange={(e) => handleStatusChange(e, filteredJobPosts.job_link)}>
+                        value={shownPosts.status}
+                        onChange={(e) => handleStatusChange(e, shownPosts.job_link)}>
                         <option value="Not Applied">Not Applied</option>
                         <option value="Applied">Applied</option>
-                        <option value="OA Recieved">OA Received</option>
+                        <option value="OA Received">OA Received</option>
                         <option value="Interview Scheduled">Interview Scheduled</option>
                         <option value="Waitlisted">Waitlisted</option>
                         <option value="Rejected">Rejected</option>

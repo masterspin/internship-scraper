@@ -43,6 +43,7 @@ bus_queries = [
     "investment analyst intern",
     "asset management intern",
     "portfolio management intern"
+    "product management intern"
 ]
 
 
