@@ -160,7 +160,7 @@ def githubOffSeasonScraper(repoLink, repoName):
 
 
 githubScraper("https://github.com/SimplifyJobs/Summer2025-Internships", "PittCSC")
-githubOffSeasonScraper("https://github.com/SimplifyJobs/Summer2024-Internships/blob/dev/README-Off-Season.md", "PittCSC Off-Season")
+# githubOffSeasonScraper("https://github.com/SimplifyJobs/Summer2024-Internships/blob/dev/README-Off-Season.md", "PittCSC Off-Season")
 githubScraper("https://github.com/Ouckah/Summer2025-Internships#the-list-", "Ouckah")
 print(job_post_data)
 
