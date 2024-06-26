@@ -251,7 +251,69 @@ useEffect(() => {
       <div className="container mx-auto px-4 py-8 md:px-6 lg:px-8">
         <div className="mb-8 flex justify-between items-center">
           <div className="flex flex-col md:flex-row justify-start space-y-4 md:space-y-0 md:space-x-4">
-            <button
+            <div className="flex overflow-x-auto rounded-lg space-x-4">
+              <div className="flex divide-x divide-blue-900">
+                <button
+                  onClick={() => handleSourceClick(0)}
+                  className="flex items-center space-x-2 align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-2 rounded-lg bg-blue-800 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-r-none border-r-0"
+                  type="button"
+                >
+                  <FaLinkedin size={16} />
+                  <span>SWE</span>
+                </button>
+                <button
+                  onClick={() => handleSourceClick(5)}
+                  className="flex items-center align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-2 rounded-lg bg-blue-800 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-r-none border-r-0 rounded-l-none"
+                  type="button"
+                >
+                  QUANT
+                </button>
+                <button
+                  onClick={() => handleSourceClick(6)}
+                  className="flex items-center align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-2 rounded-lg bg-blue-800 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-l-none"
+                  type="button"
+                >
+                  BUS
+                </button>
+              </div>
+              <div className="flex divide-x divide-green-900">
+                <button
+                  onClick={() => handleSourceClick(1)}
+                  className="flex items-center space-x-2 align-middle select-none font-sans font-bold text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-2 rounded-lg bg-green-800 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-r-none border-r-0"
+                  type="button"
+                >
+                  <FaGithub size={16} />
+                  <span>PittCSC</span>
+                </button>
+                <button
+                  onClick={() => handleSourceClick(2)}
+                  className="flex items-center align-middle select-none font-sans font-bold text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-2 rounded-lg bg-green-800 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-r-none border-r-0 rounded-l-none"
+                  type="button"
+                >
+                  Ouckah
+                </button>
+                <button
+                  onClick={() => handleSourceClick(3)}
+                  className="flex items-center align-middle select-none font-sans font-bold text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-2 rounded-lg bg-green-800 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-l-none"
+                  type="button"
+                >
+                  PittCSC Off-Season
+                </button>
+              </div>
+              <div className="flex divide-x divide-red-900">
+                {data && (<button
+                  onClick={() => handleSourceClick(4)}
+                  className="flex items-center space-x-2 align-middle select-none font-sans font-bold text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-2 rounded-lg bg-red-800 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-r-none border-r-0"
+                  type="button"
+                >
+                  <FaFile size={16} />
+                  <span>Personal Applications</span>
+                </button>
+                )}
+              </div>
+            </div>
+
+            {/* <button
               onClick={() => handleSourceClick(0)}
               className={`text-sm w-full md:w-auto px-2 py-2 border border-solid border-blue-600 font-semibold text-gray-300 rounded-lg shadow-md flex items-center justify-center space-x-2 ${
                 selectedButton === 0 ? 'bg-blue-600 hover:bg-blue-600' : 'hover:bg-blue-600'
@@ -259,8 +321,8 @@ useEffect(() => {
             >
               <FaLinkedin size={16} />
               <span>SWE</span>
-            </button>
-            <button
+            </button> */}
+            {/* <button
               onClick={() => handleSourceClick(5)}
               className={`text-sm w-full md:w-auto px-2 py-2 border border-solid border-blue-600 font-semibold text-gray-300 rounded-lg shadow-md flex items-center justify-center space-x-2 ${
                 selectedButton === 5 ? 'bg-blue-600 hover:bg-blue-600' : 'hover:bg-blue-600'
@@ -268,8 +330,8 @@ useEffect(() => {
             >
               <FaLinkedin size={16} />
               <span>QUANT</span>
-            </button>
-            <button
+            </button> */}
+            {/* <button
               onClick={() => handleSourceClick(6)}
               className={`text-sm w-full md:w-auto px-2 py-2 border border-solid border-blue-600 font-semibold text-gray-300 rounded-lg shadow-md flex items-center justify-center space-x-2 ${
                 selectedButton === 6 ? 'bg-blue-600 hover:bg-blue-600' : 'hover:bg-blue-600'
@@ -277,8 +339,8 @@ useEffect(() => {
             >
               <FaLinkedin size={16} />
               <span>BUS</span>
-            </button>
-            <button
+            </button> */}
+            {/* <button
               onClick={() => handleSourceClick(1)}
               className={`text-sm w-full md:w-auto px-2 py-2 border border-solid border-green-600 font-semibold text-gray-300 rounded-lg shadow-md flex items-center justify-center space-x-2 ${
                 selectedButton === 1 ? 'bg-green-600 hover:bg-green-600' : 'hover:bg-green-600'
@@ -286,8 +348,8 @@ useEffect(() => {
             >
               <FaGithub size={16} />
               <span>PittCSC</span>
-            </button>
-            <button
+            </button> */}
+            {/* <button
               onClick={() => handleSourceClick(2)}
               className={`text-sm w-full md:w-auto px-2 py-2 border border-solid border-green-600 font-semibold text-gray-300 rounded-lg shadow-md flex items-center justify-center space-x-2 ${
                 selectedButton === 2 ? 'bg-green-600 hover:bg-green-600' : 'hover:bg-green-600'
@@ -295,8 +357,8 @@ useEffect(() => {
             >
               <FaGithub size={16} />
               <span>Ouckah</span>
-            </button>
-            <button
+            </button> */}
+            {/* <button
               onClick={() => handleSourceClick(3)}
               className={`text-sm w-full md:w-auto px-2 py-2 border border-solid border-green-600 font-semibold text-gray-300 rounded-lg shadow-md flex items-center justify-center space-x-2 ${
                 selectedButton === 3 ? 'bg-green-600 hover:bg-green-600' : 'hover:bg-green-600'
@@ -304,8 +366,8 @@ useEffect(() => {
             >
               <FaGithub size={16} />
               <span>PittCSC Off-Season</span>
-            </button>
-            {data && (<button
+            </button> */}
+            {/* {data && (<button
               onClick={() => handleSourceClick(4)}
               className={`text-sm w-full md:w-auto px-2 py-2 border border-solid border-red-600 font-semibold text-gray-300 rounded-lg shadow-md flex items-center justify-center space-x-2 ${
                 selectedButton === 4 ? 'bg-red-600 hover:bg-red-600' : 'hover:bg-red-600'
@@ -314,7 +376,7 @@ useEffect(() => {
               <FaFile size={16} />
               <span>Personal Applications</span>
             </button>
-          )}
+          )} */}
           </div>
           {data && selectedButton === 4 &&
             (<Form />)
@@ -328,7 +390,7 @@ useEffect(() => {
               <option value="Not Applied">Not Applied</option>
               <option value="Applied">Applied</option>
               <option value="OA Received">OA Received</option>
-              <option value="Interview Scheduled">Interview Scheduled</option>
+              <option value="Interview Scheduled">Interview(s)</option>
               <option value="Waitlisted">Waitlisted</option>
               <option value="Rejected">Rejected</option>
               <option value="Offer Received">Offer Received</option>
@@ -354,7 +416,7 @@ useEffect(() => {
             </thead>
             <tbody>
               {shownPosts.map((shownPosts:any) => (
-                <tr key={shownPosts.id} className="border-b border-gray-200 dark:border-gray-700">
+                <tr key={shownPosts.id} className="dark:border-gray-700">
                   {data && selectedButton === 4 && (
                     <div className="flex space-x-4">
                       <DeleteForm jobPost={shownPosts} />
@@ -375,23 +437,24 @@ useEffect(() => {
                   {selectedButton == 3 && (<td className="px-4 py-3 text-sm">{shownPosts.term}</td>)}
                   <td className="px-4 py-3 text-sm">{shownPosts.date}</td>
                   {data && (
-                    <td className="px-4 py-3 text-sm">
-                      <select className={`bg-transparent border border-gray-300 rounded-md py-2 outline-none
+                    <td className="px-4 py-3 text-sm font-medium">
+                      <select
+                        className={`max-w-32 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md py-2 pl-1 outline-none focus:outline-none transition duration-150 ease-in-out
                           ${shownPosts.status === 'Not Applied' ? 'text-gray-600' : ''}
-                          ${shownPosts.status === 'Applied' ? 'text-white-600' : ''}
-                          ${shownPosts.status === 'OA Received' ? 'text-purple-500' : ''}
-                          ${shownPosts.status === 'Interview Scheduled' ? 'text-blue-600' : ''}
-                          ${shownPosts.status === 'Waitlisted' ? 'text-yellow-600' : ''}
-                          ${shownPosts.status === 'Rejected' ? 'text-red-600' : ''}
-                          ${shownPosts.status === 'Offer Received' ? 'text-green-600' : ''}
-                          ${shownPosts.status === 'Accepted' ? 'text-emerald-400' : ''}`}
-
+                          ${shownPosts.status === 'Applied' ? 'text-gray-700 dark:text-gray-300' : ''}
+                          ${shownPosts.status === 'OA Received' ? 'text-purple-400' : ''}
+                          ${shownPosts.status === 'Interview Scheduled' ? 'text-blue-400' : ''}
+                          ${shownPosts.status === 'Waitlisted' ? 'text-yellow-400' : ''}
+                          ${shownPosts.status === 'Rejected' ? 'text-red-400' : ''}
+                          ${shownPosts.status === 'Offer Received' ? 'text-green-400' : ''}
+                          ${shownPosts.status === 'Accepted' ? 'text-emerald-600' : ''}`}
                         value={shownPosts.status}
-                        onChange={(e) => handleStatusChange(e, shownPosts.job_link)}>
+                        onChange={(e) => handleStatusChange(e, shownPosts.job_link)}
+                      >
                         <option value="Not Applied">Not Applied</option>
                         <option value="Applied">Applied</option>
                         <option value="OA Received">OA Received</option>
-                        <option value="Interview Scheduled">Interview Scheduled</option>
+                        <option value="Interview Scheduled">Interview(s)</option>
                         <option value="Waitlisted">Waitlisted</option>
                         <option value="Rejected">Rejected</option>
                         <option value="Offer Received">Offer Received</option>

@@ -56,7 +56,7 @@ const Form = () => {
 
   return (
     <div>
-      {data && (<button onClick={openModal} className="justify-center items-center flex border border-solid border-2 border-red-600 hover:bg-red-600 text-white font-bold py-1 px-1 rounded-full rounded"><FaPlus /></button>)}
+      {data && (<button onClick={openModal} className="justify-center items-center flex border border-solid border-2 border-gray-800 hover:bg-red-900 hover:border-red-900 text-white font-bold py-1 px-1 bg-gray-800 font-sans text-xs space-x-1"><FaPlus /><span>Add Entry</span></button>)}
       <Modal
         isOpen={isOpen}
         onRequestClose={closeModal}
