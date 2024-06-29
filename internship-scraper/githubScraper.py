@@ -150,6 +150,9 @@ def githubOffSeasonScraper(repoLink, repoName):
                 except:
                     job_post["term"] = ""
                 
+                if(repoName == "PittCSC Off-Season" and "2025" not in job_post["term"]):
+                    continue
+                
                 try:
                     job_post["date"] = date
                 except:
@@ -160,8 +163,9 @@ def githubOffSeasonScraper(repoLink, repoName):
 
 
 githubScraper("https://github.com/SimplifyJobs/Summer2025-Internships", "PittCSC")
-# githubOffSeasonScraper("https://github.com/SimplifyJobs/Summer2024-Internships/blob/dev/README-Off-Season.md", "PittCSC Off-Season")
+githubOffSeasonScraper("https://github.com/SimplifyJobs/Summer2024-Internships/blob/dev/README-Off-Season.md", "PittCSC Off-Season")
 githubScraper("https://github.com/Ouckah/Summer2025-Internships#the-list-", "Ouckah")
+githubScraper("https://github.com/SimplifyJobs/New-Grad-Positions", "PittCSC New Grad")
 print(job_post_data)
 
 for job_post in job_post_data:
