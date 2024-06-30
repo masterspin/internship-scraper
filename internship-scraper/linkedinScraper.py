@@ -20,7 +20,6 @@ swe_queries = [
     "mobile engineer intern",
     "full stack developer intern",
     "cloud engineer intern",
-    "systems engineer intern",
     "computer vision intern",
     "natural language processing (NLP) intern",
     "augmented/virutal reality intern",
@@ -39,10 +38,7 @@ bus_queries = [
     "investment management intern",
     "equity research intern",
     "sales and trading intern",
-    "wealth management intern",
     "investment analyst intern",
-    "asset management intern",
-    "portfolio management intern"
     "product management intern"
 ]
 
