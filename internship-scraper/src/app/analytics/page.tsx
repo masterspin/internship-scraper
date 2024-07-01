@@ -36,7 +36,8 @@ export default function Analytics() {
         try {
           let { data: statusData, error: statusError } = await supabase
             .from("statuses")
-            .select("*");
+            .select("*")
+            .eq("user", data.id);
 
           if (statusError) {
             console.log(statusError.message);
@@ -46,7 +47,8 @@ export default function Analytics() {
 
           let { data: customAppData, error: customAppError } = await supabase
             .from("custom_applications")
-            .select("*");
+            .select("*")
+            .eq("user", data.id);
 
           if (customAppError) {
             console.log(customAppError.message);
