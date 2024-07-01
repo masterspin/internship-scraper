@@ -211,6 +211,7 @@ export default function Home() {
               const dateB: any = new Date(b.date);
               return dateB - dateA;
             });
+          break;
         case 7:
           filteredData = jobPosts
             .filter((jobPost) => jobPost.source === "PittCSC New Grad")
@@ -219,7 +220,6 @@ export default function Home() {
               const dateB: any = new Date(`${b.date} ${currentYear}`);
               return dateB - dateA;
             });
-
           break;
         default:
           filteredData = [...jobPosts];
