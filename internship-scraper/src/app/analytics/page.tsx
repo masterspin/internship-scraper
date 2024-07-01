@@ -27,6 +27,7 @@ export default function Analytics() {
 
   const chartRef = useRef<Chart<"pie", any[], any> | null>(null);
   const sourceChartRef = useRef<Chart<"pie", any[], any> | null>(null);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -208,8 +209,35 @@ export default function Analytics() {
       <Header />
       {data && !loading && (
         <div>
-          <div className="bg-gray-900 pt-4 pb-2 text-center rounded-t-lg shadow-sm font-semibold text-2xl mt-8 mx-4">
+          <div className="relative bg-gray-900 pt-4 pb-2 text-center rounded-t-lg shadow-sm font-semibold text-2xl mt-8 mx-4">
             Application Statuses
+            <div
+              className="inline-block ml-2 relative"
+              onMouseEnter={() => setShowTooltip(true)}
+              onMouseLeave={() => setShowTooltip(false)}
+            >
+              <button className="text-stone-400 hover:text-stone-600 focus:outline-none">
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M12 8h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </button>
+              {showTooltip && (
+                <div className="text-left font-normal absolute bottom-full left-0 w-64 p-2 bg-stone-900 text-white text-xs rounded-lg shadow-lg">
+                  This may be an overstimate due to duplicates
+                </div>
+              )}
+            </div>
           </div>
           <div className="flex flex-col justify-between grid grid-cols-2 gap-2 p-4 pb-8 bg-gray-900 rounded-b-lg mx-4 shadow-md">
             <div className="flex-grow flex justify-center items-end">
