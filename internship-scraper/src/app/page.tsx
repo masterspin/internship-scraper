@@ -228,8 +228,8 @@ export default function Home() {
           break;
       }
       setFilterOption("All");
-      setFilteredJobPosts(filteredData);
     }
+    setFilteredJobPosts(filteredData);
     setHasStatus(true);
   };
 
@@ -283,8 +283,8 @@ export default function Home() {
           shownData = filteredJobPosts;
           break;
       }
-      setShownPosts(shownData);
     }
+    setShownPosts(shownData);
     setHasStatus(true);
   };
 
