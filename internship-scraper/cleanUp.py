@@ -25,6 +25,10 @@ for entry in current_database:
     link = entry.get('job_link')
     oldLink = link
     print(link)
+    statuses = supabase.table('statuses').select('*').eq('job', oldLink).execute().data
+    filtered_count = len([status for status in statuses if status.get('status') != 'Not Applied'])
+    if(filtered_count > 0):
+        continue
     link = "https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/" + link.split('/')[-1]
     response = requests.get(link)
     retries = 0
@@ -36,22 +40,18 @@ for entry in current_database:
             
 
     if(response.status_code != 200):
-        statuses = supabase.table('statuses').select('*').eq('job', oldLink).execute().data
-        filtered_count = len([status for status in statuses if status.get('status') != 'Not Applied'])
-        if(filtered_count == 0):
-                job_list.append(oldLink)
+        job_list.append(oldLink)
+        print(statuses)
+        print(filtered_count)
     else:
         data = response.text
         soup = BeautifulSoup(data, "html.parser")
         feedback_message = soup.find('figcaption', class_='closed-job__flavor--closed')
         if(feedback_message and "No longer accepting applications" in feedback_message.get_text()):
+            job_list.append(oldLink)
             print(feedback_message.get_text())
-            statuses = supabase.table('statuses').select('*').eq('job', oldLink).execute().data
             print(statuses)
-            filtered_count = len([status for status in statuses if status.get('status') != 'Not Applied'])
             print(filtered_count)
-            if(filtered_count == 0):
-                job_list.append(oldLink)
             
 print(job_list)
 for link in job_list:
