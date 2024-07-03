@@ -26,6 +26,7 @@ export default function Home() {
 
   useEffect(() => {
     const fetchData = async () => {
+      setHasStatus(false);
       try {
         const { data: jobData, error } = await supabase
           .from("posts")
@@ -33,8 +34,6 @@ export default function Home() {
         if (error) {
           throw error;
         }
-
-        setHasStatus(false);
 
         const statusPromises = jobData.map(async (jobPost) => {
           try {
@@ -55,6 +54,7 @@ export default function Home() {
         const newJobPosts = await Promise.all(statusPromises);
 
         setJobPosts(newJobPosts);
+        setHasStatus(false);
 
         if (data) {
           try {
@@ -68,15 +68,15 @@ export default function Home() {
             }
 
             setCustomJobPosts(customApplications);
+            setHasStatus(false);
           } catch (error: any) {
             console.error("Error fetching custom applications:", error.message);
           }
         }
-
-        setHasStatus(true);
       } catch (error: any) {
         console.error("Error fetching job posts:", error.message);
       }
+      setHasStatus(true);
     };
     fetchData();
   }, [data]);
@@ -86,6 +86,7 @@ export default function Home() {
     e: React.ChangeEvent<HTMLSelectElement>,
     jobId: string
   ) => {
+    setHasStatus(false);
     const newStatus = e.target.value;
     // Update the jobPosts state with the new status for the job post with the matching ID
     setJobPosts(
@@ -133,6 +134,7 @@ export default function Home() {
         console.error("Error updating job status:", error.message);
       }
     }
+    setHasStatus(true);
   };
 
   const handleSourceClick = (index: number) => {
@@ -227,8 +229,8 @@ export default function Home() {
       }
       setFilterOption("All");
       setFilteredJobPosts(filteredData);
-      setHasStatus(true);
     }
+    setHasStatus(true);
   };
 
   const handleFilterClick = (value: string) => {
@@ -282,8 +284,8 @@ export default function Home() {
           break;
       }
       setShownPosts(shownData);
-      setHasStatus(true);
     }
+    setHasStatus(true);
   };
 
   useEffect(() => {
