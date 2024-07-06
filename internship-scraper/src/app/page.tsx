@@ -26,6 +26,7 @@ export default function Home() {
 
   useEffect(() => {
     const fetchData = async () => {
+      setHasStatus(false);
       try {
         const { data: jobData, error } = await supabase
           .from("posts")
@@ -33,8 +34,6 @@ export default function Home() {
         if (error) {
           throw error;
         }
-
-        setHasStatus(false);
 
         const statusPromises = jobData.map(async (jobPost) => {
           try {
@@ -72,11 +71,10 @@ export default function Home() {
             console.error("Error fetching custom applications:", error.message);
           }
         }
-
-        setHasStatus(true);
       } catch (error: any) {
         console.error("Error fetching job posts:", error.message);
       }
+      setHasStatus(true);
     };
     fetchData();
   }, [data]);
@@ -227,8 +225,8 @@ export default function Home() {
       }
       setFilterOption("All");
       setFilteredJobPosts(filteredData);
-      setHasStatus(true);
     }
+    setHasStatus(true);
   };
 
   const handleFilterClick = (value: string) => {
@@ -277,13 +275,18 @@ export default function Home() {
             (jobPost) => jobPost.status === "Accepted"
           );
           break;
+        case "Will Not Apply":
+          shownData = filteredJobPosts.filter(
+            (jobPost) => jobPost.status === "Will Not Apply"
+          );
+          break;
         default:
           shownData = filteredJobPosts;
           break;
       }
       setShownPosts(shownData);
-      setHasStatus(true);
     }
+    setHasStatus(true);
   };
 
   useEffect(() => {
@@ -395,6 +398,7 @@ export default function Home() {
                   <option value="Rejected">Rejected</option>
                   <option value="Offer Received">Offer Received</option>
                   <option value="Accepted">Accepted</option>
+                  <option value="Will Not Apply">Will Not Apply</option>
                 </select>
               </div>
             )}
@@ -499,6 +503,11 @@ export default function Home() {
                             shownPosts.status === "Accepted"
                               ? "text-emerald-600"
                               : ""
+                          }
+                          ${
+                            shownPosts.status === "Will Not Apply"
+                              ? "text-amber-800"
+                              : ""
                           }`}
                           value={shownPosts.status}
                           onChange={(e) =>
@@ -515,6 +524,7 @@ export default function Home() {
                           <option value="Rejected">Rejected</option>
                           <option value="Offer Received">Offer Received</option>
                           <option value="Accepted">Accepted</option>
+                          <option value="Will Not Apply">Will Not Apply</option>
                         </select>
                       </td>
                     )}

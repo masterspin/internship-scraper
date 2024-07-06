@@ -30,8 +30,8 @@ export default function Analytics() {
   const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
     const fetchData = async () => {
+      setLoading(true);
       if (data) {
         try {
           let { data: statusData, error: statusError } = await supabase
@@ -59,10 +59,10 @@ export default function Analytics() {
           console.log(error.message);
         }
       }
+      setLoading(false);
     };
 
     fetchData();
-    setLoading(false);
   }, [data]);
 
   useEffect(() => {
@@ -89,6 +89,7 @@ export default function Analytics() {
         "Rejected",
         "Offer Received",
         "Accepted",
+        "Will Not Apply",
       ];
       const statusCounts = [];
 
@@ -115,8 +116,9 @@ export default function Analytics() {
               "rgba(248, 113, 113, 0.9)", // Rejected (red)
               "rgba(74, 222, 128, 0.9)", // Offer Received (green)
               "rgba(16, 185, 129, 0.9)", // Accepted (emerald)
+              "rgba(146, 64, 14, 0.9)", // Will Not Apply (amber)
             ],
-            borderWidth: 1,
+            borderWidth: 0,
           },
         ],
       };
@@ -177,7 +179,7 @@ export default function Analytics() {
               "rgba(12, 132, 252, 0.9)",
               "rgba(248, 113, 113, 0.9)",
             ],
-            borderWidth: 1,
+            borderWidth: 0,
           },
         ],
       };
