@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import Modal from 'react-modal';
+import React, { useState, useEffect } from "react";
+import Modal from "react-modal";
 import { MdDeleteForever } from "react-icons/md";
-import { supabaseBrowser } from '@/lib/supabase/browser';
-import useUser from '@/app/hook/useUser';
-import useSharedFormState from '@/app/hook/useCustomJobPosts';
+import { supabaseBrowser } from "@/lib/supabase/browser";
+import useUser from "@/app/hook/useUser";
+import useSharedFormState from "@/app/hook/useCustomJobPosts";
 
 const supabase = supabaseBrowser();
 
@@ -24,23 +24,35 @@ const DeleteForm: React.FC<{ jobPost: any }> = ({ jobPost }) => {
     try {
       // Perform the deletion operation
       await supabase
-        .from('custom_applications')
+        .from("custom_applications")
         .delete()
-        .eq('job_link', jobPost.job_link)
-        .eq('user', jobPost.user);
+        .eq("job_link", jobPost.job_link)
+        .eq("user", jobPost.user);
 
-      setCustomJobPosts(customJobPosts.filter(post => !(post.job_link === jobPost.job_link && post.user === jobPost.user)));
+      setCustomJobPosts(
+        customJobPosts.filter(
+          (post) =>
+            !(post.job_link === jobPost.job_link && post.user === jobPost.user)
+        )
+      );
 
       // Close the modal
       closeModal();
-    } catch (error:any) {
-      console.error('Error deleting application data:', error.message);
+    } catch (error: any) {
+      console.error("Error deleting application data:", error.message);
     }
   };
 
   return (
     <div>
-      {data && (<button onClick={openModal} className="justify-center items-center flex text-white font-bold py-6 px-2 rounded-full rounded"><MdDeleteForever color="gray" /></button>)}
+      {data && (
+        <button
+          onClick={openModal}
+          className="justify-center items-center flex text-white font-bold py-6 px-2 rounded-full rounded"
+        >
+          <MdDeleteForever color="gray" />
+        </button>
+      )}
       <Modal
         isOpen={isOpen}
         onRequestClose={closeModal}
@@ -49,15 +61,15 @@ const DeleteForm: React.FC<{ jobPost: any }> = ({ jobPost }) => {
         className="bg-gray-900"
         style={{
           overlay: {
-            backgroundColor: 'rgba(0, 0, 0, 0.75)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
+            backgroundColor: "rgba(0, 0, 0, 0.75)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
           },
           content: {
-            width: '90%', // Set width
-            maxWidth: '600px', // Set maximum width
-            padding: '20px', // Add padding
+            width: "90%", // Set width
+            maxWidth: "600px", // Set maximum width
+            padding: "20px", // Add padding
           },
         }}
       >

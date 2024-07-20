@@ -59,3 +59,4 @@ for link in job_list:
         response = supabase.table('posts').delete().eq('job_link', link).execute()
     except Exception as e:
         print(f"An error occurred: {e}")
+print(len(job_list))
