@@ -18,9 +18,7 @@ httpx==0.27.0
 idna==3.7
 multidict==6.0.5
 ndg-httpsclient==0.5.1
-numpy==1.26.4
 packaging==24.0
-pandas==2.2.2
 postgrest==0.16.4
 pyasn1==0.6.0
 pycparser==2.22

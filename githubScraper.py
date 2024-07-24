@@ -1,7 +1,6 @@
 import requests
 import os
 from bs4 import BeautifulSoup
-from datetime import datetime
 from supabase import create_client, Client
 from dotenv import load_dotenv
 
