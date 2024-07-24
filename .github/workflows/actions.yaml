@@ -1,7 +1,7 @@
 name: run githubScraper.py
 
 on:
-  schedule::
+  schedule:
     - cron: "0 */2 * * *"
 
 jobs:
