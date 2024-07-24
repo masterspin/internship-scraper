@@ -1,8 +1,9 @@
 name: run githubScraper.py
 
 on:
-  schedule:
-    - cron: "0 8-2/2 * * *" # runs every 2 hours
+  schedule: # runs every 2 hours from 8am - 2am
+    - cron: "0 8-23/2 * * *"
+    - cron: "0 0-2/2 * * *"
   push:
     branches:
       - main
