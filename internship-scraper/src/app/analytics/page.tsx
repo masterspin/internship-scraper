@@ -158,16 +158,36 @@ export default function Analytics() {
         sourceChartRef.current.destroy();
       }
 
-      const statusLabels = ["Platform Applications", "Personal Applications"];
+      const statusLabels = [
+        "LinkedIn Applications",
+        "GitHub Applications",
+        "Personal Applications",
+      ];
       const statusCounts = [];
 
       statusCounts.push(
-        statuses.filter((status) => status.status !== "Not Applied").length
+        statuses.filter(
+          (status) =>
+            status.status !== "Not Applied" &&
+            status.status !== "Will Not Apply" &&
+            new URL(status.job).hostname === "www.linkedin.com"
+        ).length
+      );
+
+      statusCounts.push(
+        statuses.filter(
+          (status) =>
+            status.status !== "Not Applied" &&
+            status.status !== "Will Not Apply" &&
+            new URL(status.job).hostname !== "www.linkedin.com"
+        ).length
       );
       statusCounts.push(
         customApplications.filter((status) => status.status !== "Not Applied")
           .length
       );
+
+      console.log(statusCounts);
 
       const data = {
         labels: [...statusLabels],
@@ -177,6 +197,7 @@ export default function Analytics() {
             data: [...statusCounts],
             backgroundColor: [
               "rgba(12, 132, 252, 0.9)",
+              "rgba(34, 197, 94, 0.9)",
               "rgba(248, 113, 113, 0.9)",
             ],
             borderWidth: 0,

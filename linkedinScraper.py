@@ -105,6 +105,9 @@ def getJobData(jobType):
         if (jobType == "BUS") and any(word in job_post["job_role"].lower() for word in ["hr", "human resources", "front desk", "reception", "admin", "train", "unpaid"]):
             continue
 
+        if(jobType == "BUS") and "2025" not in job_post["job_role"].lower():
+            continue
+
         try:
             job_post["company_name"] = " ".join(job_soup.find("a", {"class": "topcard__org-name-link topcard__flavor--black-link"}).stripped_strings)
         except:
