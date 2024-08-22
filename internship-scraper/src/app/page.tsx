@@ -27,56 +27,57 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       setHasStatus(false);
+
       try {
-        const { data: jobData, error } = await supabase
-          .from("posts")
-          .select("*");
-        if (error) {
-          throw error;
-        }
+        const [
+          { data: jobData, error: jobError },
+          { data: customApplications, error: customAppError },
+        ] = await Promise.all([
+          supabase.from("posts").select("*"),
+          data
+            ? supabase
+                .from("custom_applications")
+                .select("*")
+                .eq("user", data.id)
+            : Promise.resolve({ data: [], error: null }),
+        ]);
+
+        if (jobError) throw jobError;
+        if (customAppError) throw customAppError;
 
         const statusPromises = jobData.map(async (jobPost) => {
+          const link = jobPost.job_link;
+          const userId = data?.id;
+
           try {
-            const link = jobPost.job_link;
-            const id = data?.id;
-            const { data: statusData, error } = await supabase
+            const { data: statusData, error: statusError } = await supabase
               .from("statuses")
-              .upsert({ user: id, job: link })
-              .select()
+              .upsert({ user: userId, job: link })
+              .select("status")
               .single();
-            return { ...jobPost, status: statusData?.status };
-          } catch (error: any) {
-            console.error("Error fetching job status:", error.message);
+
+            if (statusError) throw statusError;
+
+            return { ...jobPost, status: statusData?.status || "Unknown" };
+          } catch (statusError: any) {
+            console.error("Error fetching job status:", statusError.message);
             return { ...jobPost, status: "Unknown" };
           }
         });
 
         const newJobPosts = await Promise.all(statusPromises);
-
         setJobPosts(newJobPosts);
-
-        if (data) {
-          try {
-            const { data: customApplications, error } = await supabase
-              .from("custom_applications")
-              .select("*")
-              .eq("user", data.id);
-
-            if (error) {
-              throw error;
-            }
-
-            setCustomJobPosts(customApplications);
-          } catch (error: any) {
-            console.error("Error fetching custom applications:", error.message);
-          }
-        }
+        setCustomJobPosts(customApplications);
       } catch (error: any) {
         console.error("Error fetching job posts:", error.message);
+      } finally {
+        setHasStatus(true);
       }
-      setHasStatus(true);
     };
-    fetchData();
+
+    if (data) {
+      fetchData();
+    }
   }, [data]);
 
   //NEED TO DO 'thiS
