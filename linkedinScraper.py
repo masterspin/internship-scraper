@@ -20,7 +20,6 @@ swe_queries = [
     "mobile engineer intern",
     "full stack developer intern",
     "computer vision intern",
-    "augmented/virutal reality intern",
 ]
 
 quant_queries = [
