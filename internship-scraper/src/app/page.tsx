@@ -29,6 +29,7 @@ export default function Home() {
       setHasStatus(false);
 
       try {
+        // Fetch job posts and custom applications
         const [
           { data: jobData, error: jobError },
           { data: customApplications, error: customAppError },
@@ -45,39 +46,39 @@ export default function Home() {
         if (jobError) throw jobError;
         if (customAppError) throw customAppError;
 
+        let newJobPosts = jobData;
+
         if (data) {
-          const statusPromises = jobData.map(async (jobPost) => {
-            const link = jobPost.job_link;
-            const userId = data?.id;
+          // Fetch all statuses for the given userId
+          const { data: statuses, error: statusesError } = await supabase
+            .from("statuses")
+            .select("job, status")
+            .eq("user", data.id);
 
-            try {
-              const { data: statusData, error: statusError } = await supabase
-                .from("statuses")
-                .upsert({ user: userId, job: link })
-                .select("status")
-                .single();
+          if (statusesError) throw statusesError;
 
-              if (statusError) throw statusError;
+          // Create a map of statuses for quick lookup
+          const statusMap = statuses.reduce((acc: any, { job, status }) => {
+            acc[job] = status;
+            return acc;
+          }, {});
 
-              return { ...jobPost, status: statusData?.status || "Unknown" };
-            } catch (statusError: any) {
-              console.error("Error fetching job status:", statusError.message);
-              return { ...jobPost, status: "Unknown" };
-            }
+          // Map job posts to their statuses
+          newJobPosts = jobData.map((jobPost) => {
+            const status = statusMap[jobPost.job_link] || "Not Applied";
+            return { ...jobPost, status };
           });
-
-          const newJobPosts = await Promise.all(statusPromises);
-          setJobPosts(newJobPosts);
-          setCustomJobPosts(customApplications);
-        } else {
-          setJobPosts(jobData);
         }
+
+        setJobPosts(newJobPosts);
+        setCustomJobPosts(customApplications);
       } catch (error: any) {
         console.error("Error fetching job posts:", error.message);
       } finally {
         setHasStatus(true);
       }
     };
+
     if (!isFetching) {
       fetchData();
     }

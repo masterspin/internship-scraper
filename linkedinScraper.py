@@ -103,10 +103,14 @@ def getJobData(jobType):
         if(jobType == "BUS") and "2025" not in job_post["job_role"].lower():
             continue
 
+
         try:
             job_post["company_name"] = " ".join(job_soup.find("a", {"class": "topcard__org-name-link topcard__flavor--black-link"}).stripped_strings)
         except:
             job_post["company_name"] = ""
+
+        if(job_post["company_name"] in ["Jobs via eFinancialCareers", "WayUp", "EV.Careers","Refonte Learning","Dice","U.S. Bank"]):
+            continue
         
         try:
             job_post["job_type"] = jobType
