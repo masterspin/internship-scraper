@@ -14,6 +14,17 @@ print("Starting Github scrape...")
 current_database = supabase.table('posts').select('*').execute().data
 job_post_data = []
 
+def stripUnwantedQueryParams(link):
+    if "?" not in link:
+        return link
+
+    unwanted_queries = {"utm_source=Simplify", "ref=Simplify"}
+
+    [link_path, query_string] = link.split("?", 1)
+    filtered_query_string = "?" + "&".join(list(set(query_string.split("&")) - unwanted_queries))
+
+    return (link_path + filtered_query_string).strip("?")
+
 def githubScraper(repoLink, repoName):
     githubInternships = requests.get(repoLink)
     soup = BeautifulSoup(githubInternships.text, features="html.parser")
@@ -24,7 +35,7 @@ def githubScraper(repoLink, repoName):
 
         links = internship_details[3].find_all("a")
         if(len(links) > 0):
-            job_link_exists = any(links[0].get("href").split("?",1)[0] == item.get('job_link').split("?",1)[0] for item in current_database)
+            job_link_exists = any(stripUnwantedQueryParams(links[0].get("href")) == stripUnwantedQueryParams(item.get('job_link')) for item in current_database)
             if(not job_link_exists):
                 job_post = {}
                 try:
@@ -95,7 +106,7 @@ def githubOffSeasonScraper(repoLink, repoName):
         date = internship_details[5].string
         links = internship_details[4].find_all("a")
         if(len(links) > 0):
-            job_link_exists = any(links[0].get("href").split("?",1)[0] == item.get('job_link').split("?",1)[0] for item in current_database)
+            job_link_exists = any(stripUnwantedQueryParams(links[0].get("href")) == stripUnwantedQueryParams(item.get('job_link')) for item in current_database)
             if(not job_link_exists):
                 job_post = {}
                 try:
