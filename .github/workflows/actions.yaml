@@ -1,4 +1,4 @@
-name: run githubScraper.py
+name: run Scrapers
 
 on:
   schedule: # runs every 2 hours from 8am - 2am
@@ -25,9 +25,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: execute py script # run githubScraper.py
+      - name: execute githubScraper.py
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_SERVICE_ROLE_KEY: ${{ secrets.NEXT_PUBLIC_SERVICE_ROLE_KEY }}
         run: python githubScraper.py
+
+      - name: execute airtableScraper.py
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_SERVICE_ROLE_KEY: ${{ secrets.NEXT_PUBLIC_SERVICE_ROLE_KEY }}
+        run: python airtableScraper.py
