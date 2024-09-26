@@ -19,7 +19,6 @@ def scrape_airtable(job_function: str):
 
     # Initialize existing_links from Supabase data
     existing_links = set(record['job_link'] for record in current_data)
-
     s = requests.Session()
 
     headers = {
@@ -80,10 +79,6 @@ def scrape_airtable(job_function: str):
     # Filter by the provided Job Function
     df = df[df['Job Function'] == job_function]
 
-    # Drop unwanted columns
-    columns_to_drop = ['id', 'createdTime', 'Apply.label', 'Company Size', 'Company Industry', 'Work Model', 'Salary', 'Qualifications', 'Job Function']
-    df = df.drop(columns=columns_to_drop, errors='ignore')
-
     df = df.rename(columns={
         'Apply.url': 'job_link',
         'Company': 'company_name',
@@ -91,6 +86,10 @@ def scrape_airtable(job_function: str):
         'Date': 'date',
         'Location': 'location'
     })
+
+    columns_to_keep = ['job_link', 'company_name', 'job_role', 'date', 'location']
+
+    df = df[columns_to_keep]
 
     df['source'] = 'airtable'
     if(job_function == "Electrical and Controls Engineering"):
