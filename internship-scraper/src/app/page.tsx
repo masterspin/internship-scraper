@@ -10,6 +10,8 @@ import useSharedFormState from "@/app/hook/useCustomJobPosts";
 import { supabaseBrowser } from "@/lib/supabase/browser";
 import useUser from "@/app/hook/useUser";
 import { FaFile, FaGithub, FaLinkedin } from "react-icons/fa";
+import { FaBoltLightning } from "react-icons/fa6";
+
 
 const supabase = supabaseBrowser();
 
@@ -224,6 +226,15 @@ export default function Home() {
               return dateB - dateA;
             });
           break;
+        case 8:
+          filteredData = jobPosts
+            .filter((jobPost) => jobPost.source === "airtable" && jobPost.job_type === "EE")
+            .sort((a, b) => {
+              const dateA: any = new Date(`${a.date} ${currentYear}`);
+              const dateB: any = new Date(`${b.date} ${currentYear}`);
+              return dateB - dateA;
+            });
+          break;
         default:
           filteredData = [...jobPosts];
           break;
@@ -367,6 +378,16 @@ export default function Home() {
                     type="button"
                   >
                     PittCSC New Grad
+                  </button>
+                </div>
+                <div className="flex divide-x divide-sky-900">
+                  <button
+                    onClick={() => handleSourceClick(8)}
+                    className="flex items-center space-x-2 align-middle select-none font-sans font-bold text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-2 rounded-lg bg-sky-600 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none border-r-0"
+                    type="button"
+                  >
+                    <FaBoltLightning size={16} />
+                    <span>EE</span>
                   </button>
                 </div>
                 <div className="flex divide-x divide-red-900">
