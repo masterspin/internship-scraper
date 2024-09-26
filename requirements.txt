@@ -18,6 +18,7 @@ idna==3.7
 multidict==6.0.5
 ndg-httpsclient==0.5.1
 packaging==24.0
+pandas==2.2.3
 postgrest==0.16.4
 pyasn1==0.6.0
 pycparser==2.22
