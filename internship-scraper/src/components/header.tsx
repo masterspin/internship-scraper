@@ -59,7 +59,7 @@ const Header = () => {
                   className="cursor-center flex items-center py-2 px-2 rounded-lg text-white font-medium shadow-sm hover:bg-gray-800 border-gray-800 border-solid border-2"
                 >
                   <FcGoogle className="w-5 h-5 mr-2" />
-                  Sign In
+                  Track Applications
                 </Button>
               ) : (
                 <div className="relative">
