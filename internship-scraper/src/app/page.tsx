@@ -230,8 +230,8 @@ export default function Home() {
           filteredData = jobPosts
             .filter((jobPost) => jobPost.source === "airtable" && jobPost.job_type === "EE")
             .sort((a, b) => {
-              const dateA: any = new Date(`${a.date} ${currentYear}`);
-              const dateB: any = new Date(`${b.date} ${currentYear}`);
+              const dateA: any = new Date(a.date);
+              const dateB: any = new Date(b.date);
               return dateB - dateA;
             });
           break;
@@ -239,8 +239,8 @@ export default function Home() {
           filteredData = jobPosts
             .filter((jobPost) => jobPost.source === "airtable" && jobPost.job_type === "Hardware")
             .sort((a, b) => {
-              const dateA: any = new Date(`${a.date} ${currentYear}`);
-              const dateB: any = new Date(`${b.date} ${currentYear}`);
+              const dateA: any = new Date(a.date);
+              const dateB: any = new Date(b.date);
               return dateB - dateA;
             });
           break;
