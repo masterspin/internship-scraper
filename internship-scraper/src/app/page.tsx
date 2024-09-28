@@ -446,7 +446,7 @@ export default function Home() {
             )}
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full table-auto border-collapse">
+            <table className="min-w-full table-auto border-collapse">
               <thead>
                 <tr className="bg-gray-100 dark:bg-gray-800">
                   {data && selectedButton === 4 && (

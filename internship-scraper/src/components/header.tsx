@@ -127,14 +127,6 @@ const Header = () => {
                   )}
                 </div>
               )
-              // <Button onClick={() => handleLogOut()} className="cursor-center flex flex-col items-center py-2 px-2 rounded-3xl text-white font-medium shadow-sm hover:bg-gray-800 border-blue-800 border-solid border-2">
-              //   <div className="text-center text-sm font-bold">
-              //     {data?.email}
-              //   </div>
-              //   <div className="text-xs text-gray-300">
-              //     Log Out
-              //   </div>
-              // </Button>
             }
           </div>
         </nav>
