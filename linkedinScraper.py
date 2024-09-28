@@ -152,14 +152,14 @@ getJobData("QUANT")
 
 print("got job data for QUANT")
 
-job_id_list =[]
-
-for busJob in bus_queries:
-    parseQuery(busJob)
-
-getJobData("BUS")
-
-print("got job data for BUS")
+# job_id_list =[]
+#
+# for busJob in bus_queries:
+#     parseQuery(busJob)
+#
+# getJobData("BUS")
+#
+# print("got job data for BUS")
 
 print(job_post_data)
 
