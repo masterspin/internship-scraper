@@ -26,12 +26,12 @@ quant_queries = [
     "quantitative analysis intern",
 ]
 
-bus_queries = [
-    "financial analyst intern",
-    "investment management intern",
-    "equity research intern",
-    "product management intern"
-]
+# bus_queries = [
+#     "financial analyst intern",
+#     "investment management intern",
+#     "equity research intern",
+#     "product management intern"
+# ]
 
 
 current_database = supabase.table('posts').select('*').execute().data
@@ -86,14 +86,14 @@ def getJobData(jobType):
             job_post["job_role"] = job_soup.find("h2", {"class" : "top-card-layout__title font-sans text-lg papabear:text-xl font-bold leading-open text-color-text mb-0 topcard__title"}).text.strip()
         except:
             job_post["job_role"] = ""
-        
+
         if jobType == "QUANT" and not any(keyword in job_post["job_role"].lower() for keyword in ["quant", "trad"]):
             continue
 
         if jobType == "QUANT" and any(keyword in job_post["job_role"].lower() for keyword in ["data"]):
             continue
 
-        if (jobType == "QUANT" or jobType == "SWE") and any(word in job_post["job_role"].lower() for word in ["research","supply chain", "trainee", "behavior", "sr", "senior", "tech lead", "market", "sale", "business", "mechanical", "benefit", "inclusion", "coordinator", "clearing", "electric", "design", "client", "legal", "tax", "social", "process", "accounting", "retail", "training", "customer", "administrative", "human resources", "operations analyst", "management", "apprentice", "unpaid", "phd", "civil engineer", "HR"]):
+        if (jobType == "QUANT" or jobType == "SWE") and any(word in job_post["job_role"].lower() for word in ["research","supply chain", "trainee", "behavior", "sr", "senior", "tech lead", "market", "sale", "business", "mechanical", "benefit", "inclusion", "coordinator", "clearing", "electric", "design", "client", "legal", "tax", "social", "process", "accounting", "retail", "training", "customer", "administrative", "human resources", "operations analyst", "management", "apprentice", "unpaid", "phd", "civil engineer", "hr", "conversion"]):
             continue
 
         if (jobType == "BUS") and any(word in job_post["job_role"].lower() for word in ["hr", "human resources", "front desk", "reception", "admin", "train", "unpaid"]):
@@ -108,9 +108,9 @@ def getJobData(jobType):
         except:
             job_post["company_name"] = ""
 
-        if(job_post["company_name"] in ["Jobs via eFinancialCareers", "WayUp", "EV.Careers","Refonte Learning","Dice","U.S. Bank","JobsInLogistics.com", "Georgia Tech Research Institute", "NYC Department of Health and Mental Hygiene", "National Indemnity Company", "Navy Federal Credit Union", "National Renewable Energy Laboratory", "Oak Ridge National Laboratory", "myGwork - LGBTQ+ Business Community", "L3Harris Technologies", "Jobs via Dice", "U.S. Hunger"]):
+        if(job_post["company_name"] in ["Jobs via eFinancialCareers", "WayUp", "EV.Careers","Refonte Learning", "Refonte Learning AI","Dice","U.S. Bank","JobsInLogistics.com", "Georgia Tech Research Institute", "NYC Department of Health and Mental Hygiene", "National Indemnity Company", "Navy Federal Credit Union", "National Renewable Energy Laboratory", "Oak Ridge National Laboratory", "myGwork - LGBTQ+ Business Community", "L3Harris Technologies", "Jobs via Dice", "U.S. Hunger"]):
             continue
-        
+
         try:
             job_post["job_type"] = jobType
         except:
@@ -131,7 +131,7 @@ def getJobData(jobType):
             job_post["date"] = datetime.now().strftime("%m-%d-%Y")
         except:
             job_post["date"] = ""
-        
+
         job_post_data.append(job_post)
         time.sleep(0.1)
 
