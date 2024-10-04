@@ -108,7 +108,7 @@ def getJobData(jobType):
         except:
             job_post["company_name"] = ""
 
-        if(job_post["company_name"] in ["ClearanceJobs","Jobs via eFinancialCareers", "WayUp", "EV.Careers","Refonte Learning", "Refonte Learning AI","Dice","U.S. Bank","JobsInLogistics.com", "Georgia Tech Research Institute", "NYC Department of Health and Mental Hygiene", "National Indemnity Company", "Navy Federal Credit Union", "National Renewable Energy Laboratory", "Oak Ridge National Laboratory", "myGwork - LGBTQ+ Business Community", "L3Harris Technologies", "Jobs via Dice", "U.S. Hunger"]):
+        if(job_post["company_name"] in ["Federal Reserve Bank of St. Louis","Federal Reserve Board","Oil and Gas Job Search Ltd","ClearanceJobs","Jobs via eFinancialCareers", "WayUp", "EV.Careers","Refonte Learning", "Refonte Learning AI","Dice","U.S. Bank","JobsInLogistics.com", "Georgia Tech Research Institute", "NYC Department of Health and Mental Hygiene", "National Indemnity Company", "Navy Federal Credit Union", "National Renewable Energy Laboratory", "Oak Ridge National Laboratory", "myGwork - LGBTQ+ Business Community", "L3Harris Technologies", "Jobs via Dice", "U.S. Hunger"]):
             continue
 
         try:
