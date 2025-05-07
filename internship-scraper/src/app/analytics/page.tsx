@@ -1,33 +1,40 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
-import Link from "next/link";
+import { useEffect, useState } from "react";
 import Header from "@/components/header";
-import Form from "@/components/modal";
-import EditForm from "@/components/editModal";
-import DeleteForm from "@/components/deleteModal";
 import useSharedFormState from "@/app/hook/useCustomJobPosts";
-import Chart, {
-  ChartConfiguration,
-  ChartOptions,
-  ChartType,
-} from "chart.js/auto"; // Import Chart.js types
-
 import { supabaseBrowser } from "@/lib/supabase/browser";
 import useUser from "@/app/hook/useUser";
-import { FaFile, FaGithub, FaLinkedin } from "react-icons/fa";
+
+// Import shadcn components
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Skeleton } from "@/components/ui/skeleton";
+import { InfoIcon } from "lucide-react";
+
+// Import Recharts for better chart integration with React
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Legend,
+  Tooltip as RechartsTooltip,
+} from "recharts";
 
 const supabase = supabaseBrowser();
 
 export default function Analytics() {
   const [statuses, setStatuses] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false); // Initialize loading state as true
+  const [loading, setLoading] = useState(false);
   const [customApplications, setCustomApplications] = useState<any[]>([]);
 
   const { isFetching, data } = useUser();
-
-  const chartRef = useRef<Chart<"pie", any[], any> | null>(null);
-  const sourceChartRef = useRef<Chart<"pie", any[], any> | null>(null);
-  const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -65,234 +72,246 @@ export default function Analytics() {
     fetchData();
   }, [data]);
 
-  useEffect(() => {
-    setLoading(true);
-    createOrUpdatePieChart();
-    sourcePieChart();
-    setLoading(false);
-  }, [statuses, customApplications]);
+  // Prepare data for status chart
+  const getStatusChartData = () => {
+    const statusLabels = [
+      "Applied",
+      "OA Received",
+      "Interview Scheduled",
+      "Waitlisted",
+      "Rejected",
+      "Offer Received",
+      "Accepted",
+      "Will Not Apply",
+    ];
 
-  const createOrUpdatePieChart = () => {
-    if (data) {
-      const ctx = document.getElementById("myPieChart") as HTMLCanvasElement;
-      if (!ctx) return;
+    const statusColors = [
+      "#6B7280", // Applied (gray)
+      "#C084FC", // OA Received (purple)
+      "#60A5FA", // Interview Scheduled (blue)
+      "#FBBF24", // Waitlisted (yellow)
+      "#F87171", // Rejected (red)
+      "#4ADE80", // Offer Received (green)
+      "#10B981", // Accepted (emerald)
+      "#92400E", // Will Not Apply (amber)
+    ];
 
-      if (chartRef.current) {
-        chartRef.current.destroy();
-      }
+    const data = statusLabels
+      .map((label, index) => {
+        const count =
+          statuses.filter((status) => status.status === label).length +
+          customApplications.filter((app) => app.status === label).length;
 
-      const statusLabels = [
-        "Applied",
-        "OA Received",
-        "Interview Scheduled",
-        "Waitlisted",
-        "Rejected",
-        "Offer Received",
-        "Accepted",
-        "Will Not Apply",
-      ];
-      const statusCounts = [];
+        return {
+          name: label,
+          value: count,
+          color: statusColors[index],
+        };
+      })
+      .filter((item) => item.value > 0);
 
-      for (let i = 0; i < statusLabels.length; i++) {
-        const statusCount =
-          statuses.filter((status) => status.status === statusLabels[i])
-            .length +
-          customApplications.filter((app) => app.status === statusLabels[i])
-            .length;
-        statusCounts.push(statusCount);
-      }
-
-      const data = {
-        labels: [...statusLabels],
-        datasets: [
-          {
-            label: "Applications",
-            data: [...statusCounts],
-            backgroundColor: [
-              "rgba(75, 85, 99, 0.9)", // Applied (gray)
-              "rgba(192, 132, 252, 0.9)", // OA Received (purple)
-              "rgba(96, 165, 250, 0.9)", // Interview Scheduled (blue)
-              "rgba(251, 191, 36, 0.9)", // Waitlisted (yellow)
-              "rgba(248, 113, 113, 0.9)", // Rejected (red)
-              "rgba(74, 222, 128, 0.9)", // Offer Received (green)
-              "rgba(16, 185, 129, 0.9)", // Accepted (emerald)
-              "rgba(146, 64, 14, 0.9)", // Will Not Apply (amber)
-            ],
-            borderWidth: 0,
-          },
-        ],
-      };
-
-      const options: ChartOptions<"pie"> = {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: "bottom",
-            align: "start",
-            labels: {
-              color: "white",
-              font: {
-                size: 12,
-              },
-            },
-          },
-        },
-      };
-
-      chartRef.current = new Chart(ctx, {
-        type: "pie",
-        data: data,
-        options: options,
-      });
-    }
+    return { data, colors: statusColors };
   };
 
-  const sourcePieChart = () => {
-    if (data) {
-      const ctx = document.getElementById(
-        "sourcePieChart"
-      ) as HTMLCanvasElement;
-      if (!ctx) return;
+  // Prepare data for source chart
+  const getSourceChartData = () => {
+    const sourceLabels = [
+      "LinkedIn Applications",
+      "GitHub Applications",
+      "Personal Applications",
+    ];
 
-      if (sourceChartRef.current) {
-        sourceChartRef.current.destroy();
-      }
+    const sourceColors = [
+      "#0C84FC", // LinkedIn
+      "#22C55E", // GitHub
+      "#F87171", // Personal
+    ];
 
-      const statusLabels = [
-        "LinkedIn Applications",
-        "GitHub Applications",
-        "Personal Applications",
-      ];
-      const statusCounts = [];
+    const counts = [
+      statuses.filter(
+        (status) =>
+          status.status !== "Not Applied" &&
+          status.status !== "Will Not Apply" &&
+          new URL(status.job).hostname === "www.linkedin.com"
+      ).length,
+      statuses.filter(
+        (status) =>
+          status.status !== "Not Applied" &&
+          status.status !== "Will Not Apply" &&
+          new URL(status.job).hostname !== "www.linkedin.com"
+      ).length,
+      customApplications.filter((status) => status.status !== "Not Applied")
+        .length,
+    ];
 
-      statusCounts.push(
-        statuses.filter(
-          (status) =>
-            status.status !== "Not Applied" &&
-            status.status !== "Will Not Apply" &&
-            new URL(status.job).hostname === "www.linkedin.com"
-        ).length
-      );
+    const data = sourceLabels
+      .map((label, index) => ({
+        name: label,
+        value: counts[index],
+        color: sourceColors[index],
+      }))
+      .filter((item) => item.value > 0);
 
-      statusCounts.push(
-        statuses.filter(
-          (status) =>
-            status.status !== "Not Applied" &&
-            status.status !== "Will Not Apply" &&
-            new URL(status.job).hostname !== "www.linkedin.com"
-        ).length
-      );
-      statusCounts.push(
-        customApplications.filter((status) => status.status !== "Not Applied")
-          .length
-      );
+    return { data, colors: sourceColors };
+  };
 
-      console.log(statusCounts);
+  const renderCustomizedLabel = ({
+    cx,
+    cy,
+    midAngle,
+    innerRadius,
+    outerRadius,
+    percent,
+    name,
+  }) => {
+    if (percent < 0.05) return null;
 
-      const data = {
-        labels: [...statusLabels],
-        datasets: [
-          {
-            label: "Applications",
-            data: [...statusCounts],
-            backgroundColor: [
-              "rgba(12, 132, 252, 0.9)",
-              "rgba(34, 197, 94, 0.9)",
-              "rgba(248, 113, 113, 0.9)",
-            ],
-            borderWidth: 0,
-          },
-        ],
-      };
+    const RADIAN = Math.PI / 180;
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
-      const options: ChartOptions<"pie"> = {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: "bottom",
-            align: "start",
-            labels: {
-              color: "white",
-              font: {
-                size: 12,
-              },
-            },
-          },
-        },
-      };
-
-      sourceChartRef.current = new Chart(ctx, {
-        type: "pie",
-        data: data,
-        options: options,
-      });
-    }
+    return (
+      <text
+        x={x}
+        y={y}
+        fill="white"
+        textAnchor={x > cx ? "start" : "end"}
+        dominantBaseline="central"
+        fontSize={12}
+      >
+        {`${(percent * 100).toFixed(0)}%`}
+      </text>
+    );
   };
 
   return (
-    <div>
+    <div className="container mx-auto">
       <Header />
-      {data && !loading && (
-        <div>
-          <div className="relative bg-gray-900 pt-4 pb-2 text-center rounded-t-lg shadow-sm font-semibold text-2xl mt-8 mx-4">
-            Application Statuses
-            <div
-              className="inline-block ml-2 relative"
-              onMouseEnter={() => setShowTooltip(true)}
-              onMouseLeave={() => setShowTooltip(false)}
-            >
-              <button className="text-stone-400 hover:text-stone-600 focus:outline-none">
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M13 16h-1v-4h-1m1-4h.01M12 8h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </button>
-              {showTooltip && (
-                <div className="text-left font-normal absolute bottom-full left-0 w-64 p-2 bg-stone-900 text-white text-xs rounded-lg shadow-lg">
-                  This may be an overstimate due to duplicates
-                </div>
-              )}
-            </div>
+
+      {data && !loading ? (
+        <div className="py-8">
+          <Tabs defaultValue="status" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsTrigger value="status">Application Statuses</TabsTrigger>
+              <TabsTrigger value="source">Application Sources</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="status">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle>Application Status Distribution</CardTitle>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <InfoIcon className="h-4 w-4 text-muted-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="max-w-xs">
+                          This may be an overestimate due to duplicates
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-80">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={getStatusChartData().data}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          label={renderCustomizedLabel}
+                          outerRadius={120}
+                          fill="#8884d8"
+                          dataKey="value"
+                        >
+                          {getStatusChartData().data.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Legend
+                          layout="horizontal"
+                          verticalAlign="bottom"
+                          align="center"
+                        />
+                        <RechartsTooltip
+                          formatter={(value, name) => [
+                            `${value} applications`,
+                            name,
+                          ]}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="source">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Application Source Distribution</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-80">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={getSourceChartData().data}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          label={renderCustomizedLabel}
+                          outerRadius={120}
+                          fill="#8884d8"
+                          dataKey="value"
+                        >
+                          {getSourceChartData().data.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Legend
+                          layout="horizontal"
+                          verticalAlign="bottom"
+                          align="center"
+                        />
+                        <RechartsTooltip
+                          formatter={(value, name) => [
+                            `${value} applications`,
+                            name,
+                          ]}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
+      ) : data && loading ? (
+        <div className="flex flex-col items-center justify-center py-16 space-y-4">
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-64" />
+            <Skeleton className="h-4 w-40 mx-auto" />
           </div>
-          <div className="flex flex-col justify-between grid grid-cols-2 gap-2 p-4 pb-8 bg-gray-900 rounded-b-lg mx-4 shadow-md">
-            <div className="flex-grow flex justify-center items-end">
-              <div className="w-full h-full bg-gray-800 p-6 text-center rounded-lg shadow-sm font-semibold text-lg">
-                <canvas id="myPieChart" className="w-full h-full"></canvas>
-              </div>
-            </div>
-            <div className="bg-gray-800 p-6 text-center rounded-lg shadow-sm font-semibold text-lg">
-              <canvas id="sourcePieChart" className="w-full h-full"></canvas>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 w-full gap-4">
+            <Skeleton className="h-80 w-full rounded-lg" />
+            <Skeleton className="h-80 w-full rounded-lg" />
           </div>
         </div>
-      )}
-      {data && loading && (
-        <div>
-          <div className="flex justify-center items-center h-32">
-            <h1 className="text-blue-500 text-3xl font-bold">Loading...</h1>
-          </div>
-          <div className="flex justify-center items-center">
-            <p className="text-gray-300">This may take a few moments</p>
-          </div>
-        </div>
-      )}
-      {!data && (
-        <div>
-          <div className="flex justify-center items-center h-32">
-            <h1 className="text-blue-500 text-3xl font-bold">
-              Please Sign In to View Analytics
-            </h1>
-          </div>
+      ) : (
+        <div className="flex justify-center items-center py-24">
+          <Card className="w-full max-w-md">
+            <CardHeader>
+              <CardTitle className="text-center text-primary">
+                Please Sign In to View Analytics
+              </CardTitle>
+            </CardHeader>
+          </Card>
         </div>
       )}
     </div>

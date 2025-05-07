@@ -11,7 +11,29 @@ import { supabaseBrowser } from "@/lib/supabase/browser";
 import useUser from "@/app/hook/useUser";
 import { FaFile, FaGithub, FaLinkedin } from "react-icons/fa";
 import { FaBoltLightning } from "react-icons/fa6";
+import { Loader2 } from "lucide-react";
 
+// Import Shadcn components
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
 
 const supabase = supabaseBrowser();
 
@@ -23,6 +45,7 @@ export default function Home() {
   const [hasStatus, setHasStatus] = useState(false);
   const [selectedButton, setSelectedButton] = useState(0);
   const [filterOption, setFilterOption] = useState("All");
+  const [isLoading, setIsLoading] = useState(false);
 
   const { isFetching, data } = useUser();
 
@@ -86,12 +109,8 @@ export default function Home() {
     }
   }, [data]);
 
-  //NEED TO DO 'thiS
-  const handleStatusChange = async (
-    e: React.ChangeEvent<HTMLSelectElement>,
-    jobId: string
-  ) => {
-    const newStatus = e.target.value;
+  const handleStatusChange = async (value: string, jobId: string) => {
+    const newStatus = value;
     // Update the jobPosts state with the new status for the job post with the matching ID
     setJobPosts(
       jobPosts.map((jobPost) => {
@@ -143,6 +162,7 @@ export default function Home() {
   const handleSourceClick = (index: number) => {
     setSelectedButton(index);
     setHasStatus(false);
+    setIsLoading(true);
     let filteredData = [];
     if (jobPosts) {
       const currentYear = new Date().getFullYear();
@@ -163,27 +183,50 @@ export default function Home() {
           filteredData = jobPosts
             .filter((jobPost) => jobPost.source === "PittCSC")
             .sort((a, b) => {
-              const dateA: any = new Date(`${a.date} ${currentYear}`);
-              const dateB: any = new Date(`${b.date} ${currentYear}`);
-              return dateB - dateA;
+              const parseDate = (date: string) => {
+                const match = date.match(/(\d+)([a-z]+)/);
+                if (!match) return 0;
+                const [_, value, unit] = match;
+                const multiplier = unit === "d" ? 1 : unit === "mo" ? 30 : 0;
+                return parseInt(value) * multiplier;
+              };
+
+              const dateA = parseDate(a.date);
+              const dateB = parseDate(b.date);
+              return dateA - dateB;
             });
           break;
         case 2:
           filteredData = jobPosts
-            .filter((jobPost) => jobPost.source === "Ouckah")
+            .filter((jobPost) => jobPost.source === "CSCareers")
             .sort((a, b) => {
-              const dateA: any = new Date(`${a.date} ${currentYear}`);
-              const dateB: any = new Date(`${b.date} ${currentYear}`);
-              return dateB - dateA;
+              const monthOrder = (date: string) => {
+                const jobDate = new Date(`${date} ${currentYear}`);
+                const currentMonth = new Date().getMonth();
+                const jobMonth = jobDate.getMonth();
+                return (currentMonth - jobMonth + 12) % 12;
+              };
+
+              const dateA = monthOrder(a.date);
+              const dateB = monthOrder(b.date);
+              return dateA - dateB;
             });
           break;
         case 3:
           filteredData = jobPosts
             .filter((jobPost) => jobPost.source === "PittCSC Off-Season")
             .sort((a, b) => {
-              const dateA: any = new Date(`${a.date} ${currentYear}`);
-              const dateB: any = new Date(`${b.date} ${currentYear}`);
-              return dateB - dateA;
+              const parseDate = (date: string) => {
+                const match = date.match(/(\d+)([a-z]+)/);
+                if (!match) return 0;
+                const [_, value, unit] = match;
+                const multiplier = unit === "d" ? 1 : unit === "mo" ? 30 : 0;
+                return parseInt(value) * multiplier;
+              };
+
+              const dateA = parseDate(a.date);
+              const dateB = parseDate(b.date);
+              return dateA - dateB;
             });
           break;
         case 4:
@@ -221,14 +264,25 @@ export default function Home() {
           filteredData = jobPosts
             .filter((jobPost) => jobPost.source === "PittCSC New Grad")
             .sort((a, b) => {
-              const dateA: any = new Date(`${a.date} ${currentYear}`);
-              const dateB: any = new Date(`${b.date} ${currentYear}`);
-              return dateB - dateA;
+              const parseDate = (date: string) => {
+                const match = date.match(/(\d+)([a-z]+)/);
+                if (!match) return 0;
+                const [_, value, unit] = match;
+                const multiplier = unit === "d" ? 1 : unit === "mo" ? 30 : 0;
+                return parseInt(value) * multiplier;
+              };
+
+              const dateA = parseDate(a.date);
+              const dateB = parseDate(b.date);
+              return dateA - dateB;
             });
           break;
         case 8:
           filteredData = jobPosts
-            .filter((jobPost) => jobPost.source === "airtable" && jobPost.job_type === "EE")
+            .filter(
+              (jobPost) =>
+                jobPost.source === "airtable" && jobPost.job_type === "EE"
+            )
             .sort((a, b) => {
               const dateA: any = new Date(a.date);
               const dateB: any = new Date(b.date);
@@ -237,11 +291,30 @@ export default function Home() {
           break;
         case 9:
           filteredData = jobPosts
-            .filter((jobPost) => jobPost.source === "airtable" && jobPost.job_type === "Hardware")
+            .filter(
+              (jobPost) =>
+                jobPost.source === "airtable" && jobPost.job_type === "Hardware"
+            )
             .sort((a, b) => {
               const dateA: any = new Date(a.date);
               const dateB: any = new Date(b.date);
               return dateB - dateA;
+            });
+          break;
+        case 10:
+          filteredData = jobPosts
+            .filter((jobPost) => jobPost.source === "CSCareers Off-Season")
+            .sort((a, b) => {
+              const monthOrder = (date: string) => {
+                const jobDate = new Date(`${date} ${currentYear}`);
+                const currentMonth = new Date().getMonth();
+                const jobMonth = jobDate.getMonth();
+                return (currentMonth - jobMonth + 12) % 12;
+              };
+
+              const dateA = monthOrder(a.date);
+              const dateB = monthOrder(b.date);
+              return dateA - dateB;
             });
           break;
         default:
@@ -251,12 +324,14 @@ export default function Home() {
       setFilterOption("All");
       setFilteredJobPosts(filteredData);
     }
+    setIsLoading(false);
     setHasStatus(true);
   };
 
   const handleFilterClick = (value: string) => {
     setFilterOption(value);
     setHasStatus(false);
+    setIsLoading(true);
     let shownData = [];
     if (filteredJobPosts) {
       switch (value) {
@@ -311,6 +386,7 @@ export default function Home() {
       }
       setShownPosts(shownData);
     }
+    setIsLoading(false);
     setHasStatus(true);
   };
 
@@ -326,265 +402,268 @@ export default function Home() {
     return <></>;
   }
 
+  // Helper function to get status color classes
+  const getStatusColorClass = (status: string) => {
+    switch (status) {
+      case "Not Applied":
+        return "text-gray-600";
+      case "Applied":
+        return "text-gray-700 dark:text-gray-300";
+      case "OA Received":
+        return "text-purple-500";
+      case "Interview Scheduled":
+        return "text-blue-500";
+      case "Waitlisted":
+        return "text-yellow-500";
+      case "Rejected":
+        return "text-red-500";
+      case "Offer Received":
+        return "text-green-500";
+      case "Accepted":
+        return "text-emerald-600";
+      case "Will Not Apply":
+        return "text-amber-800";
+      default:
+        return "text-gray-600";
+    }
+  };
+
   return (
     <div>
       <Header />
-      {hasStatus && (
+      {hasStatus ? (
         <div className="container mx-auto px-4 py-8 md:px-6 lg:px-8">
           <div className="mb-8 flex justify-between items-center">
-            <div className="flex flex-col md:flex-row justify-start space-y-4 md:space-y-0 md:space-x-4">
-              <div className="flex overflow-x-auto rounded-lg space-x-4">
-                <div className="flex divide-x divide-blue-900">
-                  <button
+            <div className="flex flex-col space-y-4 md:space-y-0 md:flex-row md:space-x-4 overflow-x-auto">
+              <div className="flex flex-wrap gap-2">
+                {/* LinkedIn Group */}
+                <div className="flex">
+                  <Button
+                    variant={selectedButton === 0 ? "default" : "outline"}
                     onClick={() => handleSourceClick(0)}
-                    className="flex items-center space-x-2 align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-2 rounded-lg bg-blue-700 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-r-none border-r-0"
-                    type="button"
+                    className="rounded-r-none"
                   >
-                    <FaLinkedin size={16} />
-                    <span>SWE</span>
-                  </button>
-                  <button
+                    <FaLinkedin className="mr-2" size={16} />
+                    SWE
+                  </Button>
+                  <Button
+                    variant={selectedButton === 5 ? "default" : "outline"}
                     onClick={() => handleSourceClick(5)}
-                    className="flex items-center align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-2 rounded-lg bg-blue-700 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none border-r-0 rounded-l-none"
-                    type="button"
+                    className="rounded-l-none rounded-r-none border-x-0"
                   >
                     QUANT
-                  </button>
-                  {/*<button*/}
-                  {/*  onClick={() => handleSourceClick(6)}*/}
-                  {/*  className="flex items-center align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-2 rounded-lg bg-blue-700 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-l-none"*/}
-                  {/*  type="button"*/}
-                  {/*>*/}
-                  {/*  BUS*/}
-                  {/*</button>*/}
+                  </Button>
+                  {/* <Button
+                    variant={selectedButton === 6 ? "default" : "outline"}
+                    onClick={() => handleSourceClick(6)}
+                    className="rounded-l-none"
+                  >
+                    BUS
+                  </Button> */}
                 </div>
-                <div className="flex divide-x divide-green-900">
-                  <button
+
+                {/* GitHub Group */}
+                <div className="flex">
+                  <Button
+                    variant={selectedButton === 1 ? "default" : "outline"}
                     onClick={() => handleSourceClick(1)}
-                    className="flex items-center space-x-2 align-middle select-none font-sans font-bold text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-2 rounded-lg bg-green-700 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-r-none border-r-0"
-                    type="button"
+                    className="rounded-r-none"
                   >
-                    <FaGithub size={16} />
-                    <span>PittCSC</span>
-                  </button>
-                  <button
+                    <FaGithub className="mr-2" size={16} />
+                    PittCSC
+                  </Button>
+                  <Button
+                    variant={selectedButton === 2 ? "default" : "outline"}
                     onClick={() => handleSourceClick(2)}
-                    className="flex items-center align-middle select-none font-sans font-bold text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-2 rounded-lg bg-green-700 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-r-none border-r-0 rounded-l-none"
-                    type="button"
+                    className="rounded-none border-x-0"
                   >
-                    Ouckah
-                  </button>
-                  <button
+                    CSCareers
+                  </Button>
+                  <Button
+                    variant={selectedButton === 3 ? "default" : "outline"}
                     onClick={() => handleSourceClick(3)}
-                    className="flex items-center align-middle select-none font-sans font-bold text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-2 rounded-lg bg-green-700 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-r-none rounded-l-none"
-                    type="button"
+                    className="rounded-none border-r-0"
                   >
                     PittCSC Off-Season
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant={selectedButton === 10 ? "default" : "outline"}
+                    onClick={() => handleSourceClick(10)}
+                    className="rounded-none border-r-0"
+                  >
+                    CSCareers Off-Season
+                  </Button>
+                  <Button
+                    variant={selectedButton === 7 ? "default" : "outline"}
                     onClick={() => handleSourceClick(7)}
-                    className="flex items-center align-middle select-none font-sans font-bold text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-2 rounded-lg bg-green-700 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-l-none"
-                    type="button"
+                    className="rounded-l-none"
                   >
                     PittCSC New Grad
-                  </button>
+                  </Button>
                 </div>
-                <div className="flex divide-x divide-sky-800">
-                  <button
+
+                {/* EE/Hardware Group */}
+                <div className="flex">
+                  <Button
+                    variant={selectedButton === 8 ? "default" : "outline"}
                     onClick={() => handleSourceClick(8)}
-                    className="flex items-center space-x-2 align-middle select-none font-sans font-bold text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-2 rounded-lg bg-sky-600 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none border-r-0 rounded-r-none"
-                    type="button"
+                    className="rounded-r-none"
                   >
-                    <FaBoltLightning size={16} />
-                    <span>EE</span>
-                  </button>
-                  <button
+                    <FaBoltLightning className="mr-2" size={16} />
+                    EE
+                  </Button>
+                  <Button
+                    variant={selectedButton === 9 ? "default" : "outline"}
                     onClick={() => handleSourceClick(9)}
-                    className="flex items-center space-x-2 align-middle select-none font-sans font-bold text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-2 rounded-lg bg-sky-600 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none border-r-0 rounded-l-none"
-                    type="button"
+                    className="rounded-l-none"
                   >
-                    <span>Hardware</span>
-                  </button>
+                    Hardware
+                  </Button>
                 </div>
-                <div className="flex divide-x divide-red-900">
-                  {data && (
-                    <button
-                      onClick={() => handleSourceClick(4)}
-                      className="flex items-center space-x-2 align-middle select-none font-sans font-bold text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-2 rounded-lg bg-red-700 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-r-none border-r-0"
-                      type="button"
-                    >
-                      <FaFile size={16} />
-                      <span>Personal Applications</span>
-                    </button>
-                  )}
-                </div>
+
+                {/* Personal Applications */}
+                {data && (
+                  <Button
+                    variant={selectedButton === 4 ? "destructive" : "outline"}
+                    onClick={() => handleSourceClick(4)}
+                  >
+                    <FaFile className="mr-2" size={16} />
+                    Personal Applications
+                  </Button>
+                )}
               </div>
             </div>
             {data && selectedButton === 4 && <Form />}
           </div>
-          <div>
-            {data && (
-              <div className="flex flex-col md:flex-row justify-start relative my-4 max-w-40">
-                <select
-                  value={filterOption}
-                  onChange={(e) => handleFilterClick(e.target.value)}
-                  id="underline_select"
-                  className="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 peer"
-                >
-                  <option value="All">All</option>
-                  <option value="Not Applied">Not Applied</option>
-                  <option value="Applied">Applied</option>
-                  <option value="OA Received">OA Received</option>
-                  <option value="Interview Scheduled">Interview(s)</option>
-                  <option value="Waitlisted">Waitlisted</option>
-                  <option value="Rejected">Rejected</option>
-                  <option value="Offer Received">Offer Received</option>
-                  <option value="Accepted">Accepted</option>
-                  <option value="Will Not Apply">Will Not Apply</option>
-                </select>
-              </div>
-            )}
-          </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full table-auto border-collapse">
-              <thead>
-                <tr className="bg-gray-100 dark:bg-gray-800">
-                  {data && selectedButton === 4 && (
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400"></th>
-                  )}
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Role
-                  </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Company
-                  </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Location
-                  </th>
-                  {selectedButton == 3 && (
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400">
-                      Term
-                    </th>
-                  )}
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Date
-                  </th>
-                  {data && (
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400">
-                      Status
-                    </th>
-                  )}
-                </tr>
-              </thead>
-              <tbody>
-                {shownPosts.map((shownPosts: any) => (
-                  <tr key={shownPosts.id} className="dark:border-gray-700">
-                    {data && selectedButton === 4 && (
-                      <div className="flex space-x-4">
-                        <DeleteForm jobPost={shownPosts} />
-                        <EditForm jobPost={shownPosts} />
-                      </div>
-                    )}
-                    <td className="px-4 py-3 text-sm font-medium">
-                      <Link
-                        href={shownPosts.job_link}
-                        target="_blank"
-                        className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-                      >
-                        {shownPosts.job_role}
-                      </Link>
-                    </td>
-                    <td className="px-4 py-3 text-sm">
-                      {shownPosts.company_name}
-                    </td>
-                    <td className="px-4 py-3 text-sm">{shownPosts.location}</td>
-                    {selectedButton == 3 && (
-                      <td className="px-4 py-3 text-sm">{shownPosts.term}</td>
-                    )}
-                    <td className="px-4 py-3 text-sm">{shownPosts.date}</td>
-                    {data && (
-                      <td className="px-4 py-3 text-sm font-medium">
-                        <select
-                          className={`max-w-32 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md py-2 pl-1 outline-none focus:outline-none transition duration-150 ease-in-out
-                          ${
-                            shownPosts.status === "Not Applied"
-                              ? "text-gray-600"
-                              : ""
-                          }
-                          ${
-                            shownPosts.status === "Applied"
-                              ? "text-gray-700 dark:text-gray-300"
-                              : ""
-                          }
-                          ${
-                            shownPosts.status === "OA Received"
-                              ? "text-purple-400"
-                              : ""
-                          }
-                          ${
-                            shownPosts.status === "Interview Scheduled"
-                              ? "text-blue-400"
-                              : ""
-                          }
-                          ${
-                            shownPosts.status === "Waitlisted"
-                              ? "text-yellow-400"
-                              : ""
-                          }
-                          ${
-                            shownPosts.status === "Rejected"
-                              ? "text-red-400"
-                              : ""
-                          }
-                          ${
-                            shownPosts.status === "Offer Received"
-                              ? "text-green-400"
-                              : ""
-                          }
-                          ${
-                            shownPosts.status === "Accepted"
-                              ? "text-emerald-600"
-                              : ""
-                          }
-                          ${
-                            shownPosts.status === "Will Not Apply"
-                              ? "text-amber-800"
-                              : ""
-                          }`}
-                          value={shownPosts.status}
-                          onChange={(e) =>
-                            handleStatusChange(e, shownPosts.job_link)
-                          }
-                        >
-                          <option value="Not Applied">Not Applied</option>
-                          <option value="Applied">Applied</option>
-                          <option value="OA Received">OA Received</option>
-                          <option value="Interview Scheduled">
-                            Interview(s)
-                          </option>
-                          <option value="Waitlisted">Waitlisted</option>
-                          <option value="Rejected">Rejected</option>
-                          <option value="Offer Received">Offer Received</option>
-                          <option value="Accepted">Accepted</option>
-                          <option value="Will Not Apply">Will Not Apply</option>
-                        </select>
-                      </td>
-                    )}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+
+          {data && (
+            <div className="mb-6">
+              <Select value={filterOption} onValueChange={handleFilterClick}>
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Filter by status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All</SelectItem>
+                  <SelectItem value="Not Applied">Not Applied</SelectItem>
+                  <SelectItem value="Applied">Applied</SelectItem>
+                  <SelectItem value="OA Received">OA Received</SelectItem>
+                  <SelectItem value="Interview Scheduled">
+                    Interview(s)
+                  </SelectItem>
+                  <SelectItem value="Waitlisted">Waitlisted</SelectItem>
+                  <SelectItem value="Rejected">Rejected</SelectItem>
+                  <SelectItem value="Offer Received">Offer Received</SelectItem>
+                  <SelectItem value="Accepted">Accepted</SelectItem>
+                  <SelectItem value="Will Not Apply">Will Not Apply</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          <Card>
+            <CardContent className="p-0 overflow-x-auto">
+              {isLoading ? (
+                <div className="flex justify-center items-center p-8">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      {data && selectedButton === 4 && (
+                        <TableHead className="w-[100px]">Actions</TableHead>
+                      )}
+                      <TableHead>Role</TableHead>
+                      <TableHead>Company</TableHead>
+                      <TableHead>Location</TableHead>
+                      {selectedButton === 3 && <TableHead>Term</TableHead>}
+                      <TableHead>Date</TableHead>
+                      {data && <TableHead>Status</TableHead>}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {shownPosts.map((shownPost: any) => (
+                      <TableRow key={shownPost.id}>
+                        {data && selectedButton === 4 && (
+                          <TableCell>
+                            <div className="flex space-x-2">
+                              <DeleteForm jobPost={shownPost} />
+                              <EditForm jobPost={shownPost} />
+                            </div>
+                          </TableCell>
+                        )}
+                        <TableCell>
+                          <Link
+                            href={shownPost.job_link}
+                            target="_blank"
+                            className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                          >
+                            {shownPost.job_role}
+                          </Link>
+                        </TableCell>
+                        <TableCell>{shownPost.company_name}</TableCell>
+                        <TableCell>{shownPost.location}</TableCell>
+                        {selectedButton === 3 && (
+                          <TableCell>{shownPost.term}</TableCell>
+                        )}
+                        <TableCell>{shownPost.date}</TableCell>
+                        {data && (
+                          <TableCell>
+                            <Select
+                              value={shownPost.status}
+                              onValueChange={(value) =>
+                                handleStatusChange(value, shownPost.job_link)
+                              }
+                            >
+                              <SelectTrigger
+                                className={`w-[140px] ${getStatusColorClass(
+                                  shownPost.status
+                                )}`}
+                              >
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Not Applied">
+                                  Not Applied
+                                </SelectItem>
+                                <SelectItem value="Applied">Applied</SelectItem>
+                                <SelectItem value="OA Received">
+                                  OA Received
+                                </SelectItem>
+                                <SelectItem value="Interview Scheduled">
+                                  Interview(s)
+                                </SelectItem>
+                                <SelectItem value="Waitlisted">
+                                  Waitlisted
+                                </SelectItem>
+                                <SelectItem value="Rejected">
+                                  Rejected
+                                </SelectItem>
+                                <SelectItem value="Offer Received">
+                                  Offer Received
+                                </SelectItem>
+                                <SelectItem value="Accepted">
+                                  Accepted
+                                </SelectItem>
+                                <SelectItem value="Will Not Apply">
+                                  Will Not Apply
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
+                        )}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
         </div>
-      )}
-      {!hasStatus && (
-        <div>
-          <div className="flex justify-center items-center h-32">
-            <h1 className="text-blue-500 text-3xl font-bold">Loading...</h1>
-          </div>
-          <div className="flex justify-center items-center">
-            <p className="text-gray-300">This may take a few moments</p>
-          </div>
+      ) : (
+        <div className="container mx-auto px-4 py-16 flex flex-col items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+          <p className="text-sm text-muted-foreground">Loading job posts...</p>
         </div>
       )}
     </div>
