@@ -163,6 +163,14 @@ export default function Analytics() {
     outerRadius,
     percent,
     name,
+  }: {
+    cx: number;
+    cy: number;
+    midAngle: number;
+    innerRadius: number;
+    outerRadius: number;
+    percent: number;
+    name: string;
   }) => {
     if (percent < 0.05) return null;
 
