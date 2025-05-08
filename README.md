@@ -1,8 +1,8 @@
-# Internship Scraper & Manager for SWE/Quant/Business Internships/Co-ops (2024-2025 School Year)
+# Internship Scraper & Manager for SWE/Quant/Hardware Internships/Co-ops (2025-2026 School Year)
 
 ## Overview
 
-This project is a comprehensive solution for scraping and managing internship and co-op listings for the 2024-2025 school year. It focuses on positions in software engineering (SWE), quantitative trading (Quant), electrical engineering, and business domains. The scraper collects listings from LinkedIn, the PittCSC & Simplify GitHub repository, and the Ouckah & CSCareers GitHub repository. The platform also incorporates Google OAuth for seamless user management.
+This project is a comprehensive solution for scraping and managing internship and co-op listings for the 2025-2026 school year. It focuses on positions in software engineering (SWE), quantitative trading (Quant), electrical engineering, and business domains. The scraper collects listings from LinkedIn, the PittCSC & Simplify GitHub repository, and the Ouckah & CSCareers GitHub repository. The platform also incorporates Google OAuth for seamless user management.
 
 [Visit the website (ritij.tech)](https://www.ritij.tech/)
 
