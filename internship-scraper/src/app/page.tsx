@@ -434,90 +434,109 @@ export default function Home() {
       {hasStatus ? (
         <div className="container mx-auto px-4 py-8 md:px-6 lg:px-8">
           <div className="mb-8 flex justify-between items-center">
-            <div className="flex flex-col space-y-4 md:space-y-0 md:flex-row md:space-x-4 overflow-x-auto">
-              <div className="flex flex-wrap gap-2">
+            <div className="flex flex-col space-y-4 md:space-y-0 md:flex-row md:space-x-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:flex md:flex-wrap gap-2">
                 {/* LinkedIn Group */}
-                <div className="flex">
+                <div className="flex flex-wrap">
                   <Button
                     variant={selectedButton === 0 ? "default" : "outline"}
                     onClick={() => handleSourceClick(0)}
-                    className="rounded-r-none"
+                    className="rounded-r-none flex-1 min-w-[80px]"
+                    size="lg"
                   >
-                    <FaLinkedin className="mr-2" size={16} />
-                    SWE
+                    <FaLinkedin className="mr-2 md:mr-2" size={16} />
+                    <span className="hidden sm:inline">SWE</span>
+                    <span className="sm:hidden">SWE</span>
                   </Button>
                   <Button
                     variant={selectedButton === 5 ? "default" : "outline"}
                     onClick={() => handleSourceClick(5)}
-                    className="rounded-l-none rounded-r-none border-x-0"
+                    className="rounded-l-none rounded-r-none border-x-0 flex-1 min-w-[80px]"
+                    size="lg"
                   >
-                    QUANT
+                    <span>QUANT</span>
                   </Button>
                   {/* <Button
                     variant={selectedButton === 6 ? "default" : "outline"}
                     onClick={() => handleSourceClick(6)}
-                    className="rounded-l-none"
+                    className="rounded-l-none flex-1 min-w-[80px]"
+                    size="sm"
                   >
-                    BUS
+                    <span>BUS</span>
                   </Button> */}
                 </div>
 
                 {/* GitHub Group */}
-                <div className="flex">
+                <div className="flex flex-wrap">
                   <Button
                     variant={selectedButton === 1 ? "default" : "outline"}
                     onClick={() => handleSourceClick(1)}
-                    className="rounded-r-none"
+                    className="rounded-r-none flex-1 min-w-[80px]"
+                    size="lg"
                   >
-                    <FaGithub className="mr-2" size={16} />
-                    PittCSC
+                    <FaGithub className="mr-2 md:mr-2" size={16} />
+                    <span className="hidden sm:inline">Pitt</span>
+                    <span className="sm:hidden">Pitt</span>
                   </Button>
                   <Button
                     variant={selectedButton === 2 ? "default" : "outline"}
                     onClick={() => handleSourceClick(2)}
-                    className="rounded-none border-x-0"
+                    className="rounded-none border-x-0 flex-1 min-w-[80px]"
+                    size="lg"
                   >
-                    CSCareers
+                    <span className="hidden sm:inline">CSCareers</span>
+                    <span className="sm:hidden">CSCareers</span>
                   </Button>
                   <Button
                     variant={selectedButton === 3 ? "default" : "outline"}
                     onClick={() => handleSourceClick(3)}
-                    className="rounded-none border-r-0"
+                    className="rounded-none border-r-0 flex-1 min-w-[80px]"
+                    size="lg"
                   >
-                    PittCSC Off-Season
+                    <span className="hidden sm:inline">PittCSC Off-Season</span>
+                    <span className="sm:hidden">Pitt Off</span>
                   </Button>
                   <Button
                     variant={selectedButton === 10 ? "default" : "outline"}
                     onClick={() => handleSourceClick(10)}
-                    className="rounded-none border-r-0"
+                    className="rounded-none border-r-0 flex-1 min-w-[80px]"
+                    size="lg"
                   >
-                    CSCareers Off-Season
+                    <span className="hidden sm:inline">
+                      CSCareers Off-Season
+                    </span>
+                    <span className="sm:hidden">CSC Off</span>
                   </Button>
                   <Button
                     variant={selectedButton === 7 ? "default" : "outline"}
                     onClick={() => handleSourceClick(7)}
-                    className="rounded-l-none"
+                    className="rounded-l-none flex-1 min-w-[80px]"
+                    size="lg"
                   >
-                    PittCSC New Grad
+                    <span className="hidden sm:inline">New Grad</span>
+                    <span className="sm:hidden">New Grad</span>
                   </Button>
                 </div>
 
                 {/* EE/Hardware Group */}
-                <div className="flex">
+                <div className="flex flex-wrap">
                   <Button
                     variant={selectedButton === 8 ? "default" : "outline"}
                     onClick={() => handleSourceClick(8)}
-                    className="rounded-r-none"
+                    className="rounded-r-none flex-1 min-w-[80px]"
+                    size="lg"
                   >
-                    <FaBoltLightning className="mr-2" size={16} />
-                    EE
+                    <FaBoltLightning className="mr-2 md:mr-2" size={16} />
+                    <span>EE</span>
                   </Button>
                   <Button
                     variant={selectedButton === 9 ? "default" : "outline"}
                     onClick={() => handleSourceClick(9)}
-                    className="rounded-l-none"
+                    className="rounded-l-none flex-1 min-w-[80px]"
+                    size="lg"
                   >
-                    Hardware
+                    <span className="hidden sm:inline">Hardware</span>
+                    <span className="sm:hidden">Hardware</span>
                   </Button>
                 </div>
 
@@ -526,9 +545,11 @@ export default function Home() {
                   <Button
                     variant={selectedButton === 4 ? "destructive" : "outline"}
                     onClick={() => handleSourceClick(4)}
+                    className="w-full sm:w-auto"
+                    size="lg"
                   >
-                    <FaFile className="mr-2" size={16} />
-                    Personal Applications
+                    <FaFile className="mr-2 md:mr-2" size={16} />
+                    <span>Personal Applications</span>
                   </Button>
                 )}
               </div>
@@ -567,95 +588,197 @@ export default function Home() {
                   <Loader2 className="h-8 w-8 animate-spin text-primary" />
                 </div>
               ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      {data && selectedButton === 4 && (
-                        <TableHead className="w-[100px]">Actions</TableHead>
-                      )}
-                      <TableHead>Role</TableHead>
-                      <TableHead>Company</TableHead>
-                      <TableHead>Location</TableHead>
-                      {selectedButton === 3 && <TableHead>Term</TableHead>}
-                      <TableHead>Date</TableHead>
-                      {data && <TableHead>Status</TableHead>}
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+                <>
+                  <div className="block md:hidden">
+                    {/* Mobile view - card-based layout */}
                     {shownPosts.map((shownPost: any) => (
-                      <TableRow key={shownPost.id}>
-                        {data && selectedButton === 4 && (
-                          <TableCell>
+                      <div key={shownPost.id} className="p-4 border-b">
+                        <div className="flex justify-between items-start mb-2">
+                          <div className="font-medium">
+                            <Link
+                              href={shownPost.job_link}
+                              target="_blank"
+                              className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                            >
+                              {shownPost.job_role}
+                            </Link>
+                          </div>
+                          {data && selectedButton === 4 && (
                             <div className="flex space-x-2">
                               <DeleteForm jobPost={shownPost} />
                               <EditForm jobPost={shownPost} />
                             </div>
-                          </TableCell>
-                        )}
-                        <TableCell>
-                          <Link
-                            href={shownPost.job_link}
-                            target="_blank"
-                            className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-                          >
-                            {shownPost.job_role}
-                          </Link>
-                        </TableCell>
-                        <TableCell>{shownPost.company_name}</TableCell>
-                        <TableCell>{shownPost.location}</TableCell>
-                        {selectedButton === 3 && (
-                          <TableCell>{shownPost.term}</TableCell>
-                        )}
-                        <TableCell>{shownPost.date}</TableCell>
-                        {data && (
-                          <TableCell>
-                            <Select
-                              value={shownPost.status}
-                              onValueChange={(value) =>
-                                handleStatusChange(value, shownPost.job_link)
-                              }
-                            >
-                              <SelectTrigger
-                                className={`w-[140px] ${getStatusColorClass(
-                                  shownPost.status
-                                )}`}
-                              >
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Not Applied">
-                                  Not Applied
-                                </SelectItem>
-                                <SelectItem value="Applied">Applied</SelectItem>
-                                <SelectItem value="OA Received">
-                                  OA Received
-                                </SelectItem>
-                                <SelectItem value="Interview Scheduled">
-                                  Interview(s)
-                                </SelectItem>
-                                <SelectItem value="Waitlisted">
-                                  Waitlisted
-                                </SelectItem>
-                                <SelectItem value="Rejected">
-                                  Rejected
-                                </SelectItem>
-                                <SelectItem value="Offer Received">
-                                  Offer Received
-                                </SelectItem>
-                                <SelectItem value="Accepted">
-                                  Accepted
-                                </SelectItem>
-                                <SelectItem value="Will Not Apply">
-                                  Will Not Apply
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </TableCell>
-                        )}
-                      </TableRow>
+                          )}
+                        </div>
+                        <div className="text-sm grid grid-cols-2 gap-2">
+                          <div className="text-muted-foreground">Company:</div>
+                          <div>{shownPost.company_name}</div>
+
+                          <div className="text-muted-foreground">Location:</div>
+                          <div>{shownPost.location}</div>
+
+                          {/* {selectedButton === 3 && (
+                            <>
+                              <div className="text-muted-foreground">Term:</div>
+                              <div>{shownPost.term}</div>
+                            </>
+                          )} */}
+
+                          <div className="text-muted-foreground">Date:</div>
+                          <div>{shownPost.date}</div>
+
+                          {data && (
+                            <>
+                              <div className="text-muted-foreground">
+                                Status:
+                              </div>
+                              <div>
+                                <Select
+                                  value={shownPost.status}
+                                  onValueChange={(value) =>
+                                    handleStatusChange(
+                                      value,
+                                      shownPost.job_link
+                                    )
+                                  }
+                                >
+                                  <SelectTrigger
+                                    className={`w-full ${getStatusColorClass(
+                                      shownPost.status
+                                    )}`}
+                                  >
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="Not Applied">
+                                      Not Applied
+                                    </SelectItem>
+                                    <SelectItem value="Applied">
+                                      Applied
+                                    </SelectItem>
+                                    <SelectItem value="OA Received">
+                                      OA Received
+                                    </SelectItem>
+                                    <SelectItem value="Interview Scheduled">
+                                      Interview(s)
+                                    </SelectItem>
+                                    <SelectItem value="Waitlisted">
+                                      Waitlisted
+                                    </SelectItem>
+                                    <SelectItem value="Rejected">
+                                      Rejected
+                                    </SelectItem>
+                                    <SelectItem value="Offer Received">
+                                      Offer Received
+                                    </SelectItem>
+                                    <SelectItem value="Accepted">
+                                      Accepted
+                                    </SelectItem>
+                                    <SelectItem value="Will Not Apply">
+                                      Will Not Apply
+                                    </SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
                     ))}
-                  </TableBody>
-                </Table>
+                  </div>
+
+                  <Table className="hidden md:table">
+                    <TableHeader>
+                      <TableRow>
+                        {data && selectedButton === 4 && (
+                          <TableHead className="w-[100px]">Actions</TableHead>
+                        )}
+                        <TableHead>Role</TableHead>
+                        <TableHead>Company</TableHead>
+                        <TableHead>Location</TableHead>
+                        {selectedButton === 3 && <TableHead>Term</TableHead>}
+                        <TableHead>Date</TableHead>
+                        {data && <TableHead>Status</TableHead>}
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {shownPosts.map((shownPost: any) => (
+                        <TableRow key={shownPost.id}>
+                          {data && selectedButton === 4 && (
+                            <TableCell>
+                              <div className="flex space-x-2">
+                                <DeleteForm jobPost={shownPost} />
+                                <EditForm jobPost={shownPost} />
+                              </div>
+                            </TableCell>
+                          )}
+                          <TableCell>
+                            <Link
+                              href={shownPost.job_link}
+                              target="_blank"
+                              className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                            >
+                              {shownPost.job_role}
+                            </Link>
+                          </TableCell>
+                          <TableCell>{shownPost.company_name}</TableCell>
+                          <TableCell>{shownPost.location}</TableCell>
+                          {selectedButton === 3 && (
+                            <TableCell>{shownPost.term}</TableCell>
+                          )}
+                          <TableCell>{shownPost.date}</TableCell>
+                          {data && (
+                            <TableCell>
+                              <Select
+                                value={shownPost.status}
+                                onValueChange={(value) =>
+                                  handleStatusChange(value, shownPost.job_link)
+                                }
+                              >
+                                <SelectTrigger
+                                  className={`w-[140px] ${getStatusColorClass(
+                                    shownPost.status
+                                  )}`}
+                                >
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Not Applied">
+                                    Not Applied
+                                  </SelectItem>
+                                  <SelectItem value="Applied">
+                                    Applied
+                                  </SelectItem>
+                                  <SelectItem value="OA Received">
+                                    OA Received
+                                  </SelectItem>
+                                  <SelectItem value="Interview Scheduled">
+                                    Interview(s)
+                                  </SelectItem>
+                                  <SelectItem value="Waitlisted">
+                                    Waitlisted
+                                  </SelectItem>
+                                  <SelectItem value="Rejected">
+                                    Rejected
+                                  </SelectItem>
+                                  <SelectItem value="Offer Received">
+                                    Offer Received
+                                  </SelectItem>
+                                  <SelectItem value="Accepted">
+                                    Accepted
+                                  </SelectItem>
+                                  <SelectItem value="Will Not Apply">
+                                    Will Not Apply
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                          )}
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </>
               )}
             </CardContent>
           </Card>
