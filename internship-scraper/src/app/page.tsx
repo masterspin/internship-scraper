@@ -11,7 +11,7 @@ import { supabaseBrowser } from "@/lib/supabase/browser";
 import useUser from "@/app/hook/useUser";
 import { FaFile, FaGithub, FaLinkedin } from "react-icons/fa";
 import { FaBoltLightning } from "react-icons/fa6";
-import { Loader2 } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 
 // Import Shadcn components
 import { Button } from "@/components/ui/button";
@@ -36,6 +36,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { MultiSelect, Option } from "@/components/ui/multi-select";
 
+import { useDebounce } from "use-debounce";
+import Fuse from "fuse.js";
+
 const supabase = supabaseBrowser();
 
 export default function Home() {
@@ -50,6 +53,8 @@ export default function Home() {
   const [selectedSources, setSelectedSources] = useState<(string | number)[]>([
     0,
   ]); // Default to LinkedIn SWE
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery] = useDebounce(searchQuery, 300);
 
   const { isFetching, data } = useUser();
 
@@ -724,6 +729,46 @@ export default function Home() {
     }
   }, [jobPosts, customJobPosts]);
 
+  // Apply search filter whenever search query changes
+  useEffect(() => {
+    if (!hasStatus || isLoading) return;
+
+    // If no search query, show all posts based on current filters
+    if (!debouncedSearchQuery.trim()) {
+      handleFilterClick(filterOption);
+      return;
+    }
+
+    // Configure Fuse for fuzzy searching
+    const fuseOptions = {
+      keys: ["job_role", "company_name", "location"],
+      threshold: 0.4, // Lower threshold = more strict matching
+      ignoreLocation: true,
+      shouldSort: true,
+    };
+
+    const fuse = new Fuse(filteredJobPosts, fuseOptions);
+    const searchResults = fuse
+      .search(debouncedSearchQuery)
+      .map((result) => result.item);
+
+    // Apply status filter to search results if needed
+    let filteredResults = searchResults;
+    if (filterOption !== "All" && data) {
+      filteredResults = searchResults.filter(
+        (post) => post.status === filterOption
+      );
+    }
+
+    setShownPosts(filteredResults);
+  }, [
+    debouncedSearchQuery,
+    filteredJobPosts,
+    filterOption,
+    hasStatus,
+    isLoading,
+  ]);
+
   if (isFetching) {
     return <></>;
   }
@@ -866,6 +911,31 @@ export default function Home() {
                     </Select>
                   </div>
                 )}
+              </div>
+
+              {/* Search input */}
+              <div className="pt-2">
+                <label htmlFor="search-filter" className="text-sm font-medium">
+                  Search
+                </label>
+                <div className="relative mt-1">
+                  <input
+                    id="search-filter"
+                    type="text"
+                    placeholder="Search jobs by role, company, or location..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery("")}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
 
