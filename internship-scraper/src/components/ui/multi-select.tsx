@@ -67,128 +67,133 @@ export function MultiSelect({
     onChange([]);
   };
 
+  // Only show in the button when there are few selections
+  const showInButton = selected.length <= 0;
+
+  // Render selected tags inline (like in the image provided)
+  const renderSelectedTags = () => {
+    if (selected.length === 0) return null;
+
+    return (
+      <div className="flex flex-wrap gap-2 mt-2">
+        {selected.map((item) => {
+          const option = options.find((o) => o.value === item);
+          if (!option) return null;
+
+          return (
+            <Badge
+              key={item}
+              variant="secondary"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-full"
+            >
+              <div className="flex items-center gap-1.5">
+                {option.icon}
+                <span className="text-sm">{option.label}</span>
+              </div>
+              <button
+                type="button"
+                className="ml-1 rounded-full outline-none opacity-70 hover:opacity-100"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleUnselect(item);
+                }}
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </Badge>
+          );
+        })}
+      </div>
+    );
+  };
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-full justify-between"
-        >
-          <div className="flex flex-grow flex-wrap gap-1">
-            {selected.length > 0 && badges ? (
-              <div className="flex flex-wrap gap-1 max-w-[calc(100%-24px)] overflow-hidden">
-                {selected.map((item) => {
-                  const option = options.find((o) => o.value === item);
+    <div className="space-y-1">
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            className="w-full justify-between"
+          >
+            {showInButton ? (
+              <span className="text-muted-foreground">{placeholder}</span>
+            ) : (
+              <span>{selected.length} selected</span>
+            )}
+            <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50 ml-2" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-full p-0" align="start">
+          <Command>
+            <CommandInput placeholder="Search sources..." />
+            <div className="flex items-center px-2 pt-2">
+              <div className="flex ml-auto gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={selectAll}
+                  className="h-8 px-2 text-xs"
+                >
+                  Select All
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearAll}
+                  className="h-8 px-2 text-xs"
+                >
+                  Clear All
+                </Button>
+              </div>
+            </div>
+            <CommandList onKeyDown={handleKeyDown}>
+              <CommandEmpty>No source found.</CommandEmpty>
+              <CommandGroup className="max-h-64 overflow-auto">
+                {options.map((option) => {
+                  const isSelected = selected.includes(option.value);
                   return (
-                    <Badge
-                      key={item}
-                      variant="secondary"
-                      className="flex items-center gap-1 px-2 py-0.5 mr-1 my-0.5"
+                    <CommandItem
+                      key={option.value}
+                      disabled={option.disable}
+                      onSelect={() => {
+                        if (isSelected) {
+                          onChange(
+                            selected.filter((item) => item !== option.value)
+                          );
+                        } else {
+                          onChange([...selected, option.value]);
+                        }
+                      }}
+                      className="flex items-center gap-2"
                     >
-                      {option?.icon && (
-                        <span className="mr-1">{option.icon}</span>
-                      )}
-                      {option?.label}
-                      <button
-                        type="button"
-                        className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            handleUnselect(item);
-                          }
-                        }}
-                        onMouseDown={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                        }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleUnselect(item);
-                        }}
+                      <div
+                        className={cn(
+                          "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                          isSelected
+                            ? "bg-primary text-primary-foreground"
+                            : "opacity-50 [&_svg]:invisible"
+                        )}
                       >
-                        <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
-                      </button>
-                    </Badge>
+                        <Check className={cn("h-4 w-4")} />
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        {option.icon}
+                        <span>{option.label}</span>
+                      </div>
+                    </CommandItem>
                   );
                 })}
-              </div>
-            ) : selected.length > 0 ? (
-              <div className="flex gap-1">
-                <span>{selected.length} selected</span>
-              </div>
-            ) : (
-              <span className="text-muted-foreground">{placeholder}</span>
-            )}
-          </div>
-          <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50 ml-2" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-full p-0" align="start">
-        <Command>
-          <CommandInput placeholder="Search sources..." />
-          <div className="flex items-center px-2 pt-2">
-            <div className="flex ml-auto gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={selectAll}
-                className="h-8 px-2 text-xs"
-              >
-                Select All
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={clearAll}
-                className="h-8 px-2 text-xs"
-              >
-                Clear All
-              </Button>
-            </div>
-          </div>
-          <CommandList onKeyDown={handleKeyDown}>
-            <CommandEmpty>No source found.</CommandEmpty>
-            <CommandGroup className="max-h-64 overflow-auto">
-              {options.map((option) => {
-                const isSelected = selected.includes(option.value);
-                return (
-                  <CommandItem
-                    key={option.value}
-                    disabled={option.disable}
-                    onSelect={() => {
-                      if (isSelected) {
-                        onChange(
-                          selected.filter((item) => item !== option.value)
-                        );
-                      } else {
-                        onChange([...selected, option.value]);
-                      }
-                    }}
-                    className="flex items-center gap-2"
-                  >
-                    <div
-                      className={cn(
-                        "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
-                        isSelected
-                          ? "bg-primary text-primary-foreground"
-                          : "opacity-50 [&_svg]:invisible"
-                      )}
-                    >
-                      <Check className={cn("h-4 w-4")} />
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      {option.icon}
-                      <span>{option.label}</span>
-                    </div>
-                  </CommandItem>
-                );
-              })}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+
+      {/* Display selected options as individual tags outside the dropdown */}
+      {badges && renderSelectedTags()}
+    </div>
   );
 }
