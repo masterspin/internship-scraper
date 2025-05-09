@@ -34,6 +34,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
+import { MultiSelect, Option } from "@/components/ui/multi-select";
 
 const supabase = supabaseBrowser();
 
@@ -46,6 +47,9 @@ export default function Home() {
   const [selectedButton, setSelectedButton] = useState(0);
   const [filterOption, setFilterOption] = useState("All");
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedSources, setSelectedSources] = useState<(string | number)[]>([
+    0,
+  ]); // Default to LinkedIn SWE
 
   const { isFetching, data } = useUser();
 
@@ -328,6 +332,321 @@ export default function Home() {
     setHasStatus(true);
   };
 
+  const handleSourcesChange = (sources: (string | number)[]) => {
+    setSelectedSources(sources);
+    setHasStatus(false);
+    setIsLoading(true);
+
+    // If no sources selected, show empty array
+    if (sources.length === 0) {
+      setFilteredJobPosts([]);
+      setIsLoading(false);
+      setHasStatus(true);
+      return;
+    }
+
+    // Combine data from all selected sources
+    let combinedData: any[] = [];
+    const currentYear = new Date().getFullYear();
+
+    sources.forEach((sourceId) => {
+      let sourceData: any[] = [];
+      const index = Number(sourceId);
+
+      switch (index) {
+        case 0:
+          sourceData = jobPosts
+            .filter(
+              (jobPost) =>
+                jobPost.source === "LinkedIn" && jobPost.job_type === "SWE"
+            )
+            .sort((a, b) => {
+              const dateA: any = new Date(a.date);
+              const dateB: any = new Date(b.date);
+              return dateB - dateA;
+            });
+          break;
+        case 1:
+          sourceData = jobPosts
+            .filter((jobPost) => jobPost.source === "PittCSC")
+            .sort((a, b) => {
+              const parseDate = (date: string) => {
+                const match = date.match(/(\d+)([a-z]+)/);
+                if (!match) return 0;
+                const [_, value, unit] = match;
+                const multiplier = unit === "d" ? 1 : unit === "mo" ? 30 : 0;
+                return parseInt(value) * multiplier;
+              };
+
+              const dateA = parseDate(a.date);
+              const dateB = parseDate(b.date);
+              return dateA - dateB;
+            });
+          break;
+        case 2:
+          sourceData = jobPosts
+            .filter((jobPost) => jobPost.source === "CSCareers")
+            .sort((a, b) => {
+              const monthOrder = (date: string) => {
+                const jobDate = new Date(`${date} ${currentYear}`);
+                const currentMonth = new Date().getMonth();
+                const jobMonth = jobDate.getMonth();
+                return (currentMonth - jobMonth + 12) % 12;
+              };
+
+              const dateA = monthOrder(a.date);
+              const dateB = monthOrder(b.date);
+              return dateA - dateB;
+            });
+          break;
+        case 3:
+          sourceData = jobPosts
+            .filter((jobPost) => jobPost.source === "PittCSC Off-Season")
+            .sort((a, b) => {
+              const parseDate = (date: string) => {
+                const match = date.match(/(\d+)([a-z]+)/);
+                if (!match) return 0;
+                const [_, value, unit] = match;
+                const multiplier = unit === "d" ? 1 : unit === "mo" ? 30 : 0;
+                return parseInt(value) * multiplier;
+              };
+
+              const dateA = parseDate(a.date);
+              const dateB = parseDate(b.date);
+              return dateA - dateB;
+            });
+          break;
+        case 4:
+          sourceData = customJobPosts.sort((a, b) => {
+            const dateA: any = new Date(a.date);
+            const dateB: any = new Date(b.date);
+            return dateB - dateA;
+          });
+          break;
+        case 5:
+          sourceData = jobPosts
+            .filter(
+              (jobPost) =>
+                jobPost.source === "LinkedIn" && jobPost.job_type === "QUANT"
+            )
+            .sort((a, b) => {
+              const dateA: any = new Date(a.date);
+              const dateB: any = new Date(b.date);
+              return dateB - dateA;
+            });
+          break;
+        case 6:
+          sourceData = jobPosts
+            .filter(
+              (jobPost) =>
+                jobPost.source === "LinkedIn" && jobPost.job_type === "BUS"
+            )
+            .sort((a, b) => {
+              const dateA: any = new Date(a.date);
+              const dateB: any = new Date(b.date);
+              return dateB - dateA;
+            });
+          break;
+        case 7:
+          sourceData = jobPosts
+            .filter((jobPost) => jobPost.source === "PittCSC New Grad")
+            .sort((a, b) => {
+              const parseDate = (date: string) => {
+                const match = date.match(/(\d+)([a-z]+)/);
+                if (!match) return 0;
+                const [_, value, unit] = match;
+                const multiplier = unit === "d" ? 1 : unit === "mo" ? 30 : 0;
+                return parseInt(value) * multiplier;
+              };
+
+              const dateA = parseDate(a.date);
+              const dateB = parseDate(b.date);
+              return dateA - dateB;
+            });
+          break;
+        case 8:
+          sourceData = jobPosts
+            .filter(
+              (jobPost) =>
+                jobPost.source === "airtable" && jobPost.job_type === "EE"
+            )
+            .sort((a, b) => {
+              const dateA: any = new Date(a.date);
+              const dateB: any = new Date(b.date);
+              return dateB - dateA;
+            });
+          break;
+        case 9:
+          sourceData = jobPosts
+            .filter(
+              (jobPost) =>
+                jobPost.source === "airtable" && jobPost.job_type === "Hardware"
+            )
+            .sort((a, b) => {
+              const dateA: any = new Date(a.date);
+              const dateB: any = new Date(b.date);
+              return dateB - dateA;
+            });
+          break;
+        case 10:
+          sourceData = jobPosts
+            .filter((jobPost) => jobPost.source === "CSCareers Off-Season")
+            .sort((a, b) => {
+              const monthOrder = (date: string) => {
+                const jobDate = new Date(`${date} ${currentYear}`);
+                const currentMonth = new Date().getMonth();
+                const jobMonth = jobDate.getMonth();
+                return (currentMonth - jobMonth + 12) % 12;
+              };
+
+              const dateA = monthOrder(a.date);
+              const dateB = monthOrder(b.date);
+              return dateA - dateB;
+            });
+          break;
+      }
+
+      // Only add if there is data
+      if (sourceData.length > 0) {
+        combinedData = [...combinedData, ...sourceData];
+      }
+    });
+
+    // Sort the combined data by date
+    combinedData = sortCombinedJobPosts(combinedData);
+
+    // Set most recently selected button for backward compatibility
+    if (sources.length > 0) {
+      setSelectedButton(Number(sources[0]));
+    }
+
+    setFilterOption("All");
+    setFilteredJobPosts(combinedData);
+    setIsLoading(false);
+    setHasStatus(true);
+  };
+
+  // Helper function to sort combined job posts consistently
+  const sortCombinedJobPosts = (posts: any[]): any[] => {
+    const currentYear = new Date().getFullYear();
+    const now = new Date();
+
+    // Convert all dates to comparable timestamps for consistent sorting
+    const postsWithTimestamps = posts.map((post) => {
+      const originalPost = { ...post };
+
+      // Normalize the date to a timestamp
+      let timestamp: number;
+
+      if (post.date instanceof Date) {
+        timestamp = post.date.getTime();
+      } else if (typeof post.date === "string") {
+        const dateStr = post.date.trim();
+
+        // MM-DD-YYYY format (e.g. "05-08-2025")
+        if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
+          const [month, day, year] = dateStr.split("-").map(Number);
+          const date = new Date(year, month - 1, day);
+          timestamp = date.getTime();
+        }
+        // YYYY-MM-DD format
+        else if (/^\d{4}-\d{2}-\d{2}/.test(dateStr)) {
+          timestamp = new Date(dateStr).getTime();
+        }
+        // Relative date format like "5d" or "2mo"
+        else if (/^(\d+)([a-z]+)$/.test(dateStr)) {
+          const match = dateStr.match(/^(\d+)([a-z]+)$/);
+          if (match) {
+            const [_, value, unit] = match;
+            const daysAgo =
+              parseInt(value) * (unit === "d" ? 1 : unit === "mo" ? 30 : 0);
+
+            // Create a date that's X days in the past from today
+            const date = new Date();
+            date.setDate(date.getDate() - daysAgo);
+            timestamp = date.getTime();
+          } else {
+            // Fallback timestamp (old)
+            timestamp = 0;
+          }
+        }
+        // Month name format like "January", "February", etc.
+        else if (/^[A-Za-z]+$/.test(dateStr)) {
+          try {
+            // Parse month name to a date
+            const tempDate = new Date(`${dateStr} 1, ${currentYear}`);
+
+            if (!isNaN(tempDate.getTime())) {
+              // If the month is in the future, assume it's from last year
+              if (tempDate > now) {
+                tempDate.setFullYear(currentYear - 1);
+              }
+              timestamp = tempDate.getTime();
+            } else {
+              // Fallback timestamp (old)
+              timestamp = 0;
+            }
+          } catch (e) {
+            // Fallback timestamp (old)
+            timestamp = 0;
+          }
+        }
+        // Month + Day format like "January 15"
+        else if (/^[A-Za-z]+ \d+$/.test(dateStr)) {
+          try {
+            // Parse "Month Day" format
+            const tempDate = new Date(`${dateStr}, ${currentYear}`);
+
+            if (!isNaN(tempDate.getTime())) {
+              // If the date is in the future, assume it's from last year
+              if (tempDate > now) {
+                tempDate.setFullYear(currentYear - 1);
+              }
+              timestamp = tempDate.getTime();
+            } else {
+              // Fallback timestamp (old)
+              timestamp = 0;
+            }
+          } catch (e) {
+            // Fallback timestamp (old)
+            timestamp = 0;
+          }
+        } else {
+          // Fallback timestamp (old)
+          timestamp = 0;
+        }
+      } else {
+        // Fallback timestamp (old)
+        timestamp = 0;
+      }
+
+      return {
+        ...originalPost,
+        _timestamp: timestamp,
+        _originalDate: post.date, // Keep original for debugging
+      };
+    });
+
+    // Sort by timestamp (newest first)
+    return postsWithTimestamps
+      .sort((a, b) => {
+        // Primary sort by timestamp (newest first)
+        const timestampDiff = b._timestamp - a._timestamp;
+
+        // If timestamps are equal, fallback to company name
+        if (timestampDiff === 0) {
+          return a.company_name.localeCompare(b.company_name);
+        }
+
+        return timestampDiff;
+      })
+      .map((post) => {
+        // Remove the temporary fields
+        const { _timestamp, _originalDate, ...cleanPost } = post;
+        return cleanPost;
+      });
+  };
+
   const handleFilterClick = (value: string) => {
     setFilterOption(value);
     setHasStatus(false);
@@ -398,6 +717,13 @@ export default function Home() {
     handleFilterClick(filterOption);
   }, [filteredJobPosts]);
 
+  useEffect(() => {
+    // Initialize with the default source when data is loaded
+    if (jobPosts.length > 0) {
+      handleSourcesChange(selectedSources);
+    }
+  }, [jobPosts, customJobPosts]);
+
   if (isFetching) {
     return <></>;
   }
@@ -433,153 +759,123 @@ export default function Home() {
       <Header />
       {hasStatus ? (
         <div className="container mx-auto px-4 py-8 md:px-6 lg:px-8">
-          <div className="mb-8 flex justify-between items-center">
-            <div className="flex flex-col space-y-4 md:space-y-0 md:flex-row md:space-x-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:flex md:flex-wrap gap-2">
-                {/* LinkedIn Group */}
-                <div className="flex flex-wrap">
-                  <Button
-                    variant={selectedButton === 0 ? "default" : "outline"}
-                    onClick={() => handleSourceClick(0)}
-                    className="rounded-r-none flex-1 min-w-[80px]"
-                    size="lg"
-                  >
-                    <FaLinkedin className="mr-2 md:mr-2" size={16} />
-                    <span className="hidden sm:inline">SWE</span>
-                    <span className="sm:hidden">SWE</span>
-                  </Button>
-                  <Button
-                    variant={selectedButton === 5 ? "default" : "outline"}
-                    onClick={() => handleSourceClick(5)}
-                    className="rounded-l-none rounded-r-none border-x-0 flex-1 min-w-[80px]"
-                    size="lg"
-                  >
-                    <span>QUANT</span>
-                  </Button>
-                  {/* <Button
-                    variant={selectedButton === 6 ? "default" : "outline"}
-                    onClick={() => handleSourceClick(6)}
-                    className="rounded-l-none flex-1 min-w-[80px]"
-                    size="sm"
-                  >
-                    <span>BUS</span>
-                  </Button> */}
+          <div className="mb-8 flex flex-col space-y-4">
+            <div className="flex flex-col space-y-2">
+              <h3 className="text-lg font-medium">Filters</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Source Filter - Multi-select */}
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium">Sources</label>
+                  <MultiSelect
+                    options={[
+                      {
+                        value: 0,
+                        label: "LinkedIn SWE",
+                        icon: <FaLinkedin size={16} />,
+                      },
+                      {
+                        value: 5,
+                        label: "LinkedIn QUANT",
+                        icon: <FaLinkedin size={16} />,
+                      },
+                      {
+                        value: 1,
+                        label: "PittCSC",
+                        icon: <FaGithub size={16} />,
+                      },
+                      {
+                        value: 2,
+                        label: "CSCareers",
+                        icon: <FaGithub size={16} />,
+                      },
+                      {
+                        value: 3,
+                        label: "PittCSC Off-Season",
+                        icon: <FaGithub size={16} />,
+                      },
+                      {
+                        value: 10,
+                        label: "CSCareers Off-Season",
+                        icon: <FaGithub size={16} />,
+                      },
+                      {
+                        value: 7,
+                        label: "PittCSC New Grad",
+                        icon: <FaGithub size={16} />,
+                      },
+                      {
+                        value: 8,
+                        label: "EE",
+                        icon: <FaBoltLightning size={16} />,
+                      },
+                      {
+                        value: 9,
+                        label: "Hardware",
+                        icon: <FaBoltLightning size={16} />,
+                      },
+                      ...(data
+                        ? [
+                            {
+                              value: 4,
+                              label: "Personal Applications",
+                              icon: <FaFile size={16} />,
+                            },
+                          ]
+                        : []),
+                    ]}
+                    selected={selectedSources}
+                    onChange={handleSourcesChange}
+                    placeholder="Select sources..."
+                  />
                 </div>
 
-                {/* GitHub Group */}
-                <div className="flex flex-wrap">
-                  <Button
-                    variant={selectedButton === 1 ? "default" : "outline"}
-                    onClick={() => handleSourceClick(1)}
-                    className="rounded-r-none flex-1 min-w-[80px]"
-                    size="lg"
-                  >
-                    <FaGithub className="mr-2 md:mr-2" size={16} />
-                    <span className="hidden sm:inline">Pitt</span>
-                    <span className="sm:hidden">Pitt</span>
-                  </Button>
-                  <Button
-                    variant={selectedButton === 2 ? "default" : "outline"}
-                    onClick={() => handleSourceClick(2)}
-                    className="rounded-none border-x-0 flex-1 min-w-[80px]"
-                    size="lg"
-                  >
-                    <span className="hidden sm:inline">CSCareers</span>
-                    <span className="sm:hidden">CSCareers</span>
-                  </Button>
-                  <Button
-                    variant={selectedButton === 3 ? "default" : "outline"}
-                    onClick={() => handleSourceClick(3)}
-                    className="rounded-none border-r-0 flex-1 min-w-[80px]"
-                    size="lg"
-                  >
-                    <span className="hidden sm:inline">PittCSC Off-Season</span>
-                    <span className="sm:hidden">Pitt Off</span>
-                  </Button>
-                  <Button
-                    variant={selectedButton === 10 ? "default" : "outline"}
-                    onClick={() => handleSourceClick(10)}
-                    className="rounded-none border-r-0 flex-1 min-w-[80px]"
-                    size="lg"
-                  >
-                    <span className="hidden sm:inline">
-                      CSCareers Off-Season
-                    </span>
-                    <span className="sm:hidden">CSC Off</span>
-                  </Button>
-                  <Button
-                    variant={selectedButton === 7 ? "default" : "outline"}
-                    onClick={() => handleSourceClick(7)}
-                    className="rounded-l-none flex-1 min-w-[80px]"
-                    size="lg"
-                  >
-                    <span className="hidden sm:inline">New Grad</span>
-                    <span className="sm:hidden">New Grad</span>
-                  </Button>
-                </div>
-
-                {/* EE/Hardware Group */}
-                <div className="flex flex-wrap">
-                  <Button
-                    variant={selectedButton === 8 ? "default" : "outline"}
-                    onClick={() => handleSourceClick(8)}
-                    className="rounded-r-none flex-1 min-w-[80px]"
-                    size="lg"
-                  >
-                    <FaBoltLightning className="mr-2 md:mr-2" size={16} />
-                    <span>EE</span>
-                  </Button>
-                  <Button
-                    variant={selectedButton === 9 ? "default" : "outline"}
-                    onClick={() => handleSourceClick(9)}
-                    className="rounded-l-none flex-1 min-w-[80px]"
-                    size="lg"
-                  >
-                    <span className="hidden sm:inline">Hardware</span>
-                    <span className="sm:hidden">Hardware</span>
-                  </Button>
-                </div>
-
-                {/* Personal Applications */}
+                {/* Status Filter - Show only when user is logged in */}
                 {data && (
-                  <Button
-                    variant={selectedButton === 4 ? "destructive" : "outline"}
-                    onClick={() => handleSourceClick(4)}
-                    className="w-full sm:w-auto"
-                    size="lg"
-                  >
-                    <FaFile className="mr-2 md:mr-2" size={16} />
-                    <span>Personal Applications</span>
-                  </Button>
+                  <div className="space-y-1.5">
+                    <label
+                      htmlFor="status-filter"
+                      className="text-sm font-medium"
+                    >
+                      Status
+                    </label>
+                    <Select
+                      value={filterOption}
+                      onValueChange={handleFilterClick}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Filter by status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="All">All</SelectItem>
+                        <SelectItem value="Not Applied">Not Applied</SelectItem>
+                        <SelectItem value="Applied">Applied</SelectItem>
+                        <SelectItem value="OA Received">OA Received</SelectItem>
+                        <SelectItem value="Interview Scheduled">
+                          Interview(s)
+                        </SelectItem>
+                        <SelectItem value="Waitlisted">Waitlisted</SelectItem>
+                        <SelectItem value="Rejected">Rejected</SelectItem>
+                        <SelectItem value="Offer Received">
+                          Offer Received
+                        </SelectItem>
+                        <SelectItem value="Accepted">Accepted</SelectItem>
+                        <SelectItem value="Will Not Apply">
+                          Will Not Apply
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 )}
               </div>
             </div>
-            {data && selectedButton === 4 && <Form />}
-          </div>
 
-          {data && (
-            <div className="mb-6">
-              <Select value={filterOption} onValueChange={handleFilterClick}>
-                <SelectTrigger className="w-[200px]">
-                  <SelectValue placeholder="Filter by status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="All">All</SelectItem>
-                  <SelectItem value="Not Applied">Not Applied</SelectItem>
-                  <SelectItem value="Applied">Applied</SelectItem>
-                  <SelectItem value="OA Received">OA Received</SelectItem>
-                  <SelectItem value="Interview Scheduled">
-                    Interview(s)
-                  </SelectItem>
-                  <SelectItem value="Waitlisted">Waitlisted</SelectItem>
-                  <SelectItem value="Rejected">Rejected</SelectItem>
-                  <SelectItem value="Offer Received">Offer Received</SelectItem>
-                  <SelectItem value="Accepted">Accepted</SelectItem>
-                  <SelectItem value="Will Not Apply">Will Not Apply</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          )}
+            {/* Add Personal Application button - only when user is logged in and personal apps selected */}
+            {data && selectedSources.includes(4) && (
+              <div className="flex justify-end">
+                <Form />
+              </div>
+            )}
+          </div>
 
           <Card>
             <CardContent className="p-0 overflow-x-auto">
