@@ -18,7 +18,7 @@ key: str = os.getenv("NEXT_PUBLIC_SERVICE_ROLE_KEY")
 supabase: Client = create_client(url, key)
 
 print("Starting Github scrape...")
-current_database = supabase.table('posts').select('*').execute().data
+current_database = [post for post in supabase.table('posts').select('*').execute().data if post['source'] not in ['PittCSC', 'PittCSC Off-Season']]
 job_post_data = []
 
 def githubScraper(repoLink, repoName):
@@ -250,13 +250,23 @@ def cscareersScraper(repoLink, repoName):
 
 githubScraper("https://github.com/SimplifyJobs/Summer2025-Internships", "PittCSC")
 githubOffSeasonScraper("https://github.com/SimplifyJobs/Summer2025-Internships/blob/dev/README-Off-Season.md", "PittCSC Off-Season")
-cscareersScraper("https://raw.githubusercontent.com/vanshb03/Summer2025-Internships/refs/heads/dev/README.md", "CSCareers")
-cscareersScraper("https://raw.githubusercontent.com/vanshb03/Summer2025-Internships/refs/heads/dev/OFFSEASON_README.md", "CSCareers Off-Season")
-githubScraper("https://github.com/SimplifyJobs/New-Grad-Positions", "PittCSC New Grad")
+# cscareersScraper("https://raw.githubusercontent.com/vanshb03/Summer2025-Internships/refs/heads/dev/README.md", "CSCareers")
+# cscareersScraper("https://raw.githubusercontent.com/vanshb03/Summer2025-Internships/refs/heads/dev/OFFSEASON_README.md", "CSCareers Off-Season")
+# githubScraper("https://github.com/SimplifyJobs/New-Grad-Positions", "PittCSC New Grad")
 # print(job_post_data)
 
 for job_post in job_post_data:
     try:
-        data, count = supabase.table('posts').insert(job_post).execute()
+        # Check if the job post already exists in the database
+        existing_posts = supabase.table('posts').select('*').eq('job_link', job_post['job_link']).execute().data
+        if existing_posts:
+            existing_post = existing_posts[0]
+            # Update the date if the source matches and is either PittCSC or PittCSC Off-Season
+            if existing_post['source'] in ['PittCSC', 'PittCSC Off-Season'] and existing_post['source'] == job_post['source']:
+                print("Updating existing job post...")
+                supabase.table('posts').update({'date': job_post['date']}).eq('job_link', existing_post['job_link']).execute()
+        else:
+            # Insert the new job post if it doesn't exist
+            data, count = supabase.table('posts').insert(job_post).execute()
     except Exception as e:
-        print(f"Error inserting job post: {e}")
+        print(f"Error processing job post: {e}")
