@@ -814,7 +814,7 @@ export default function Home() {
                 <InfoIcon className="h-5 w-5 text-white" />
                 <div className="text-white">
                   <p className="text-sm font-medium">
-                    We are migrating to
+                    We are migrating to{" "}
                     <a
                       href="https://internships.ritij.dev"
                       target="_blank"
