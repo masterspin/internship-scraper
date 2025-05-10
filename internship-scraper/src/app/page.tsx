@@ -11,7 +11,7 @@ import { supabaseBrowser } from "@/lib/supabase/browser";
 import useUser from "@/app/hook/useUser";
 import { FaFile, FaGithub, FaLinkedin } from "react-icons/fa";
 import { FaBoltLightning } from "react-icons/fa6";
-import { Loader2, X } from "lucide-react";
+import { Loader2, X, InfoIcon } from "lucide-react";
 
 // Import Shadcn components
 import { Button } from "@/components/ui/button";
@@ -35,6 +35,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { MultiSelect, Option } from "@/components/ui/multi-select";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 import { useDebounce } from "use-debounce";
 import Fuse from "fuse.js";
@@ -55,6 +56,7 @@ export default function Home() {
   ]); // Default to LinkedIn SWE
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery] = useDebounce(searchQuery, 300);
+  const [showBanner, setShowBanner] = useState(true);
 
   const { isFetching, data } = useUser();
 
@@ -802,6 +804,40 @@ export default function Home() {
   return (
     <div>
       <Header />
+
+      {/* Information Banner */}
+      {showBanner && (
+        <div className="bg-gradient-to-r from-purple-500 to-indigo-600 dark:from-purple-600 dark:to-indigo-700">
+          <div className="container mx-auto px-4 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <InfoIcon className="h-5 w-5 text-white" />
+                <div className="text-white">
+                  <p className="text-sm font-medium">
+                    We are migrating to
+                    <a
+                      href="https://internships.ritij.dev"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline text-white hover:text-gray-200"
+                    >
+                      internships.ritij.dev
+                    </a>
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowBanner(false)}
+                className="text-white/80 hover:text-white transition-colors"
+                aria-label="Dismiss"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {hasStatus ? (
         <div className="container mx-auto px-4 py-8 md:px-6 lg:px-8">
           <div className="mb-8 flex flex-col space-y-4">
