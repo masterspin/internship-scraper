@@ -57,6 +57,9 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery] = useDebounce(searchQuery, 300);
   const [showBanner, setShowBanner] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(50); // Show 50 items per page
+  const [totalItems, setTotalItems] = useState(0);
 
   const { isFetching, data } = useUser();
 
@@ -658,62 +661,130 @@ export default function Home() {
     setFilterOption(value);
     setHasStatus(false);
     setIsLoading(true);
-    let shownData = [];
+    setCurrentPage(1); // Reset to first page when filter changes
+
+    let filteredData = [];
     if (filteredJobPosts) {
       switch (value) {
         case "Not Applied":
-          shownData = filteredJobPosts.filter(
+          filteredData = filteredJobPosts.filter(
             (jobPost) => jobPost.status === "Not Applied"
           );
           break;
         case "Applied":
-          shownData = filteredJobPosts.filter(
+          filteredData = filteredJobPosts.filter(
             (jobPost) => jobPost.status === "Applied"
           );
           break;
         case "OA Received":
-          shownData = filteredJobPosts.filter(
+          filteredData = filteredJobPosts.filter(
             (jobPost) => jobPost.status === "OA Received"
           );
           break;
         case "Interview Scheduled":
-          shownData = filteredJobPosts.filter(
+          filteredData = filteredJobPosts.filter(
             (jobPost) => jobPost.status === "Interview Scheduled"
           );
           break;
         case "Waitlisted":
-          shownData = filteredJobPosts.filter(
+          filteredData = filteredJobPosts.filter(
             (jobPost) => jobPost.status === "Waitlisted"
           );
           break;
         case "Rejected":
-          shownData = filteredJobPosts.filter(
+          filteredData = filteredJobPosts.filter(
             (jobPost) => jobPost.status === "Rejected"
           );
           break;
         case "Offer Received":
-          shownData = filteredJobPosts.filter(
+          filteredData = filteredJobPosts.filter(
             (jobPost) => jobPost.status === "Offer Recevied"
           );
           break;
         case "Accepted":
-          shownData = filteredJobPosts.filter(
+          filteredData = filteredJobPosts.filter(
             (jobPost) => jobPost.status === "Accepted"
           );
           break;
         case "Will Not Apply":
-          shownData = filteredJobPosts.filter(
+          filteredData = filteredJobPosts.filter(
             (jobPost) => jobPost.status === "Will Not Apply"
           );
           break;
         default:
-          shownData = filteredJobPosts;
+          filteredData = filteredJobPosts;
           break;
       }
-      setShownPosts(shownData);
+
+      // Update total count for pagination
+      setTotalItems(filteredData.length);
+
+      // Get current page of data
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const paginatedData = filteredData.slice(0, itemsPerPage); // Show first page
+
+      setShownPosts(paginatedData);
     }
     setIsLoading(false);
     setHasStatus(true);
+  };
+
+  // Add a useEffect to handle pagination changes
+  useEffect(() => {
+    if (!filteredJobPosts.length || !hasStatus || isLoading) return;
+
+    let dataToPage = filteredJobPosts;
+
+    // Apply status filter if needed
+    if (filterOption !== "All" && data) {
+      dataToPage = filteredJobPosts.filter(
+        (post) => post.status === filterOption
+      );
+    }
+
+    // Apply search filter if needed
+    if (debouncedSearchQuery.trim()) {
+      const fuseOptions = {
+        keys: ["job_role", "company_name", "location"],
+        threshold: 0.33,
+        ignoreLocation: true,
+        shouldSort: true,
+      };
+
+      const fuse = new Fuse(dataToPage, fuseOptions);
+      dataToPage = fuse
+        .search(debouncedSearchQuery)
+        .map((result) => result.item);
+    }
+
+    // Update total count
+    setTotalItems(dataToPage.length);
+
+    // Calculate pagination
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedData = dataToPage.slice(startIndex, endIndex);
+
+    setShownPosts(paginatedData);
+  }, [
+    currentPage,
+    itemsPerPage,
+    debouncedSearchQuery,
+    filterOption,
+    filteredJobPosts,
+    hasStatus,
+    isLoading,
+  ]);
+
+  // Handle page change
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    // Scroll to top of results
+    window.scrollTo({
+      top: document.getElementById("resultsTop")?.offsetTop || 0,
+      behavior: "smooth",
+    });
   };
 
   useEffect(() => {
@@ -1103,82 +1174,237 @@ export default function Home() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {shownPosts.map((shownPost: any) => (
-                        <TableRow key={shownPost.id}>
-                          {data && selectedButton === 4 && (
-                            <TableCell>
-                              <div className="flex space-x-2">
-                                <DeleteForm jobPost={shownPost} />
-                                <EditForm jobPost={shownPost} />
-                              </div>
-                            </TableCell>
-                          )}
-                          <TableCell>
-                            <Link
-                              href={shownPost.job_link}
-                              target="_blank"
-                              className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-                            >
-                              {shownPost.job_role}
-                            </Link>
+                      {shownPosts.length === 0 ? (
+                        <TableRow>
+                          <TableCell
+                            colSpan={data ? (selectedButton === 4 ? 6 : 5) : 4}
+                            className="h-24 text-center text-muted-foreground"
+                          >
+                            {searchQuery
+                              ? "No results found. Try a different search term."
+                              : "No jobs found."}
                           </TableCell>
-                          <TableCell>{shownPost.company_name}</TableCell>
-                          <TableCell>{shownPost.location}</TableCell>
-                          {selectedButton === 3 && (
-                            <TableCell>{shownPost.term}</TableCell>
-                          )}
-                          <TableCell>{shownPost.date}</TableCell>
-                          {data && (
-                            <TableCell>
-                              <Select
-                                value={shownPost.status}
-                                onValueChange={(value) =>
-                                  handleStatusChange(value, shownPost.job_link)
-                                }
-                              >
-                                <SelectTrigger
-                                  className={`w-[140px] ${getStatusColorClass(
-                                    shownPost.status
-                                  )}`}
-                                >
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="Not Applied">
-                                    Not Applied
-                                  </SelectItem>
-                                  <SelectItem value="Applied">
-                                    Applied
-                                  </SelectItem>
-                                  <SelectItem value="OA Received">
-                                    OA Received
-                                  </SelectItem>
-                                  <SelectItem value="Interview Scheduled">
-                                    Interview(s)
-                                  </SelectItem>
-                                  <SelectItem value="Waitlisted">
-                                    Waitlisted
-                                  </SelectItem>
-                                  <SelectItem value="Rejected">
-                                    Rejected
-                                  </SelectItem>
-                                  <SelectItem value="Offer Received">
-                                    Offer Received
-                                  </SelectItem>
-                                  <SelectItem value="Accepted">
-                                    Accepted
-                                  </SelectItem>
-                                  <SelectItem value="Will Not Apply">
-                                    Will Not Apply
-                                  </SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </TableCell>
-                          )}
                         </TableRow>
-                      ))}
+                      ) : (
+                        shownPosts.map((shownPost: any) => (
+                          <TableRow key={shownPost.id}>
+                            {data && selectedButton === 4 && (
+                              <TableCell>
+                                <div className="flex space-x-2">
+                                  <DeleteForm jobPost={shownPost} />
+                                  <EditForm jobPost={shownPost} />
+                                </div>
+                              </TableCell>
+                            )}
+                            <TableCell>
+                              <Link
+                                href={shownPost.job_link}
+                                target="_blank"
+                                className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                              >
+                                {shownPost.job_role}
+                              </Link>
+                            </TableCell>
+                            <TableCell>{shownPost.company_name}</TableCell>
+                            <TableCell>{shownPost.location}</TableCell>
+                            {selectedButton === 3 && (
+                              <TableCell>{shownPost.term}</TableCell>
+                            )}
+                            <TableCell>{shownPost.date}</TableCell>
+                            {data && (
+                              <TableCell>
+                                <Select
+                                  value={shownPost.status}
+                                  onValueChange={(value) =>
+                                    handleStatusChange(
+                                      value,
+                                      shownPost.job_link
+                                    )
+                                  }
+                                >
+                                  <SelectTrigger
+                                    className={`w-[140px] ${getStatusColorClass(
+                                      shownPost.status
+                                    )}`}
+                                  >
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="Not Applied">
+                                      Not Applied
+                                    </SelectItem>
+                                    <SelectItem value="Applied">
+                                      Applied
+                                    </SelectItem>
+                                    <SelectItem value="OA Received">
+                                      OA Received
+                                    </SelectItem>
+                                    <SelectItem value="Interview Scheduled">
+                                      Interview(s)
+                                    </SelectItem>
+                                    <SelectItem value="Waitlisted">
+                                      Waitlisted
+                                    </SelectItem>
+                                    <SelectItem value="Rejected">
+                                      Rejected
+                                    </SelectItem>
+                                    <SelectItem value="Offer Received">
+                                      Offer Received
+                                    </SelectItem>
+                                    <SelectItem value="Accepted">
+                                      Accepted
+                                    </SelectItem>
+                                    <SelectItem value="Will Not Apply">
+                                      Will Not Apply
+                                    </SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </TableCell>
+                            )}
+                          </TableRow>
+                        ))
+                      )}
                     </TableBody>
                   </Table>
+
+                  {/* Pagination Controls */}
+                  {totalItems > itemsPerPage && (
+                    <div
+                      id="pagination"
+                      className="flex justify-between items-center border-t px-4 py-3"
+                    >
+                      <div>
+                        <p className="text-sm text-muted-foreground">
+                          Showing{" "}
+                          <span className="font-medium">
+                            {(currentPage - 1) * itemsPerPage + 1}
+                          </span>{" "}
+                          to{" "}
+                          <span className="font-medium">
+                            {Math.min(currentPage * itemsPerPage, totalItems)}
+                          </span>{" "}
+                          of <span className="font-medium">{totalItems}</span>{" "}
+                          results
+                        </p>
+                      </div>
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handlePageChange(currentPage - 1)}
+                            disabled={currentPage === 1}
+                            className="h-8 w-8 p-0"
+                          >
+                            <span className="sr-only">Previous Page</span>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                              className="w-4 h-4"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </Button>
+
+                          {/* Page numbers */}
+                          <div className="hidden sm:flex space-x-2">
+                            {Array.from({
+                              length: Math.min(
+                                5,
+                                Math.ceil(totalItems / itemsPerPage)
+                              ),
+                            }).map((_, i) => {
+                              // Calculate page numbers to show a window around current page
+                              let pageNum: number | undefined;
+                              const totalPages = Math.ceil(
+                                totalItems / itemsPerPage
+                              );
+
+                              if (totalPages <= 5) {
+                                // If 5 or fewer pages, show all
+                                pageNum = i + 1;
+                              } else if (currentPage <= 3) {
+                                // Near the start
+                                pageNum = i + 1;
+                                if (i === 4) pageNum = totalPages;
+                                if (i === 3 && totalPages > 5) pageNum = -1; // Ellipsis
+                              } else if (currentPage >= totalPages - 2) {
+                                // Near the end
+                                if (i === 0) pageNum = 1;
+                                if (i === 1 && totalPages > 5) pageNum = -1; // Ellipsis
+                                if (i >= 2) pageNum = totalPages - (4 - i);
+                              } else {
+                                // Middle - show current and neighbors
+                                if (i === 0) pageNum = 1;
+                                if (i === 1) pageNum = -1; // Ellipsis
+                                if (i === 2) pageNum = currentPage;
+                                if (i === 3) pageNum = -1; // Ellipsis
+                                if (i === 4) pageNum = totalPages;
+                              }
+
+                              // Render page button or ellipsis
+                              if (pageNum === -1) {
+                                return (
+                                  <span
+                                    key={`ellipsis-${i}`}
+                                    className="px-2 py-1 text-muted-foreground"
+                                  >
+                                    ...
+                                  </span>
+                                );
+                              }
+
+                              return (
+                                <Button
+                                  key={pageNum}
+                                  variant={
+                                    currentPage === pageNum
+                                      ? "default"
+                                      : "outline"
+                                  }
+                                  size="sm"
+                                  onClick={() => pageNum !== undefined && handlePageChange(pageNum)}
+                                  className="h-8 w-8 p-0"
+                                >
+                                  {pageNum}
+                                </Button>
+                              );
+                            })}
+                          </div>
+
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handlePageChange(currentPage + 1)}
+                            disabled={
+                              currentPage >=
+                              Math.ceil(totalItems / itemsPerPage)
+                            }
+                            className="h-8 w-8 p-0"
+                          >
+                            <span className="sr-only">Next Page</span>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                              className="w-4 h-4"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </>
               )}
             </CardContent>
