@@ -742,7 +742,7 @@ export default function Home() {
     // Configure Fuse for fuzzy searching
     const fuseOptions = {
       keys: ["job_role", "company_name", "location"],
-      threshold: 0.4, // Lower threshold = more strict matching
+      threshold: 0.33, // Lower threshold = more strict matching
       ignoreLocation: true,
       shouldSort: true,
     };
@@ -1054,7 +1054,7 @@ export default function Home() {
                   </div>
 
                   <Table className="hidden md:table">
-                    <TableHeader>
+                    <TableHeader className="bg-muted">
                       <TableRow>
                         {data && selectedButton === 4 && (
                           <TableHead className="w-[100px]">Actions</TableHead>
