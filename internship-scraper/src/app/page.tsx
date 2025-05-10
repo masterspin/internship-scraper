@@ -1061,6 +1061,145 @@ export default function Home() {
                 </div>
               ) : (
                 <>
+                  {/* Top Pagination Controls */}
+                  {totalItems > itemsPerPage && (
+                    <div
+                      id="resultsTop"
+                      className="flex justify-between items-center border-b px-4 py-3"
+                    >
+                      <div>
+                        <p className="text-sm text-muted-foreground">
+                          Showing{" "}
+                          <span className="font-medium">
+                            {(currentPage - 1) * itemsPerPage + 1}
+                          </span>{" "}
+                          to{" "}
+                          <span className="font-medium">
+                            {Math.min(currentPage * itemsPerPage, totalItems)}
+                          </span>{" "}
+                          of <span className="font-medium">{totalItems}</span>{" "}
+                          results
+                        </p>
+                      </div>
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handlePageChange(currentPage - 1)}
+                            disabled={currentPage === 1}
+                            className="h-8 w-8 p-0"
+                          >
+                            <span className="sr-only">Previous Page</span>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                              className="w-4 h-4"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </Button>
+
+                          {/* Page numbers */}
+                          <div className="hidden sm:flex space-x-2">
+                            {Array.from({
+                              length: Math.min(
+                                5,
+                                Math.ceil(totalItems / itemsPerPage)
+                              ),
+                            }).map((_, i) => {
+                              // Calculate page numbers to show a window around current page
+                              let pageNum: number | undefined;
+                              const totalPages = Math.ceil(
+                                totalItems / itemsPerPage
+                              );
+
+                              if (totalPages <= 5) {
+                                // If 5 or fewer pages, show all
+                                pageNum = i + 1;
+                              } else if (currentPage <= 3) {
+                                // Near the start
+                                pageNum = i + 1;
+                                if (i === 4) pageNum = totalPages;
+                                if (i === 3 && totalPages > 5) pageNum = -1; // Ellipsis
+                              } else if (currentPage >= totalPages - 2) {
+                                // Near the end
+                                if (i === 0) pageNum = 1;
+                                if (i === 1 && totalPages > 5) pageNum = -1; // Ellipsis
+                                if (i >= 2) pageNum = totalPages - (4 - i);
+                              } else {
+                                // Middle - show current and neighbors
+                                if (i === 0) pageNum = 1;
+                                if (i === 1) pageNum = -1; // Ellipsis
+                                if (i === 2) pageNum = currentPage;
+                                if (i === 3) pageNum = -1; // Ellipsis
+                                if (i === 4) pageNum = totalPages;
+                              }
+
+                              // Render page button or ellipsis
+                              if (pageNum === -1) {
+                                return (
+                                  <span
+                                    key={`ellipsis-top-${i}`}
+                                    className="px-2 py-1 text-muted-foreground"
+                                  >
+                                    ...
+                                  </span>
+                                );
+                              }
+
+                              return (
+                                <Button
+                                  key={`top-${pageNum}`}
+                                  variant={
+                                    currentPage === pageNum
+                                      ? "default"
+                                      : "outline"
+                                  }
+                                  size="sm"
+                                  onClick={() => pageNum !== undefined && handlePageChange(pageNum)}
+                                  className="h-8 w-8 p-0"
+                                >
+                                  {pageNum}
+                                </Button>
+                              );
+                            })}
+                          </div>
+
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handlePageChange(currentPage + 1)}
+                            disabled={
+                              currentPage >=
+                              Math.ceil(totalItems / itemsPerPage)
+                            }
+                            className="h-8 w-8 p-0"
+                          >
+                            <span className="sr-only">Next Page</span>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                              className="w-4 h-4"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5-4.25a.75.75 0 01-1.06-.02z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="block md:hidden">
                     {/* Mobile view - card-based layout */}
                     {shownPosts.map((shownPost: any) => (
@@ -1368,7 +1507,10 @@ export default function Home() {
                                       : "outline"
                                   }
                                   size="sm"
-                                  onClick={() => pageNum !== undefined && handlePageChange(pageNum)}
+                                  onClick={() =>
+                                    pageNum !== undefined &&
+                                    handlePageChange(pageNum)
+                                  }
                                   className="h-8 w-8 p-0"
                                 >
                                   {pageNum}
@@ -1396,7 +1538,7 @@ export default function Home() {
                             >
                               <path
                                 fillRule="evenodd"
-                                d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                                d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5-4.25a.75.75 0 01-1.06-.02z"
                                 clipRule="evenodd"
                               />
                             </svg>
