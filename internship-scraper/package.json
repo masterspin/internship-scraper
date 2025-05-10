@@ -19,7 +19,7 @@
     "@radix-ui/react-tabs": "^1.1.9",
     "@radix-ui/react-tooltip": "^1.2.4",
     "@supabase/auth-helpers-react": "^0.5.0",
-    "@supabase/ssr": "^0.3.0",
+    "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-auth-helpers": "^1.4.2",
     "@supabase/supabase-js": "^2.43.2",
     "@tanstack/react-query": "^5.35.1",
