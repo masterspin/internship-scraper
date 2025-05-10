@@ -842,7 +842,6 @@ export default function Home() {
         <div className="container mx-auto px-4 py-8 md:px-6 lg:px-8">
           <div className="mb-8 flex flex-col space-y-4">
             <div className="flex flex-col space-y-2">
-              <h3 className="text-lg font-medium">Filters</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Source Filter - Multi-select */}
                 <div className="space-y-1.5">
