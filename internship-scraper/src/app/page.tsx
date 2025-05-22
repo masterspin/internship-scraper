@@ -947,12 +947,17 @@ export default function Home() {
                     options={[
                       {
                         value: 0,
-                        label: "LinkedIn SWE",
+                        label: "SWE",
                         icon: <FaLinkedin size={16} />,
                       },
                       {
                         value: 5,
-                        label: "LinkedIn QUANT",
+                        label: "QUANT",
+                        icon: <FaLinkedin size={16} />,
+                      },
+                      {
+                        value: 6,
+                        label: "Business",
                         icon: <FaLinkedin size={16} />,
                       },
                       {
