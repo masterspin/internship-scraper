@@ -125,11 +125,32 @@ export default function Home() {
 
   const handleStatusChange = async (value: string, jobId: string) => {
     const newStatus = value;
-    // Update the jobPosts state with the new status for the job post with the matching ID
+
+    // First, update filteredJobPosts to maintain consistency when paging
+    setFilteredJobPosts(
+      filteredJobPosts.map((post) => {
+        if (post.job_link === jobId) {
+          return { ...post, status: newStatus };
+        }
+        return post;
+      })
+    );
+
+    // Update shownPosts directly to maintain the current page view
+    setShownPosts(
+      shownPosts.map((post) => {
+        if (post.job_link === jobId) {
+          return { ...post, status: newStatus };
+        }
+        return post;
+      })
+    );
+
+    // Also update the base data stores
     setJobPosts(
       jobPosts.map((jobPost) => {
         if (jobPost.job_link === jobId) {
-          jobPost.status = newStatus;
+          return { ...jobPost, status: newStatus };
         }
         return jobPost;
       })
@@ -138,12 +159,15 @@ export default function Home() {
     setCustomJobPosts(
       customJobPosts.map((jobPost) => {
         if (jobPost.job_link === jobId) {
-          jobPost.status = newStatus;
+          return { ...jobPost, status: newStatus };
         }
         return jobPost;
       })
     );
 
+    // Don't re-filter or change pagination here
+
+    // Update the database
     if (data && selectedButton !== 4) {
       try {
         const { data: updateData, error } = await supabase
@@ -657,11 +681,13 @@ export default function Home() {
       });
   };
 
-  const handleFilterClick = (value: string) => {
+  const handleFilterClick = (value: string, resetPage: boolean = true) => {
     setFilterOption(value);
     setHasStatus(false);
     setIsLoading(true);
-    setCurrentPage(1); // Reset to first page when filter changes
+    if (resetPage) {
+      setCurrentPage(1); // Only reset to first page when explicitly requested
+    }
 
     let filteredData = [];
     if (filteredJobPosts) {
@@ -722,7 +748,7 @@ export default function Home() {
       // Get current page of data
       const startIndex = (currentPage - 1) * itemsPerPage;
       const endIndex = startIndex + itemsPerPage;
-      const paginatedData = filteredData.slice(0, itemsPerPage); // Show first page
+      const paginatedData = filteredData.slice(startIndex, endIndex); // Show current page
 
       setShownPosts(paginatedData);
     }
@@ -792,7 +818,7 @@ export default function Home() {
   }, [jobPosts, customJobPosts]);
 
   useEffect(() => {
-    handleFilterClick(filterOption);
+    handleFilterClick(filterOption, false); // Don't reset page when re-filtering after status changes
   }, [filteredJobPosts]);
 
   useEffect(() => {
@@ -808,7 +834,7 @@ export default function Home() {
 
     // If no search query, show all posts based on current filters
     if (!debouncedSearchQuery.trim()) {
-      handleFilterClick(filterOption);
+      handleFilterClick(filterOption, false); // Don't reset page
       return;
     }
 
@@ -1162,7 +1188,10 @@ export default function Home() {
                                       : "outline"
                                   }
                                   size="sm"
-                                  onClick={() => pageNum !== undefined && handlePageChange(pageNum)}
+                                  onClick={() =>
+                                    pageNum !== undefined &&
+                                    handlePageChange(pageNum)
+                                  }
                                   className="h-8 w-8 p-0"
                                 >
                                   {pageNum}
