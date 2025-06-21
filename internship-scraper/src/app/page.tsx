@@ -51,10 +51,24 @@ export default function Home() {
   const [selectedButton, setSelectedButton] = useState(0);
   const [filterOption, setFilterOption] = useState("All");
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedSources, setSelectedSources] = useState<(string | number)[]>([
-    0,
-  ]); // Default to LinkedIn SWE
-  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedSources, setSelectedSources] = useState<(string | number)[]>(
+    () => {
+      // Try to load from localStorage if we're in the browser
+      if (typeof window !== "undefined") {
+        const savedSources = localStorage.getItem("selectedSources");
+        return savedSources ? JSON.parse(savedSources) : [0]; // Default to LinkedIn SWE if nothing saved
+      }
+      return [0]; // Default for SSR
+    }
+  );
+  const [searchQuery, setSearchQuery] = useState<string>(() => {
+    // Try to load search query from localStorage if we're in the browser
+    if (typeof window !== "undefined") {
+      const savedSearch = localStorage.getItem("searchQuery");
+      return savedSearch || ""; // Return saved search or empty string
+    }
+    return ""; // Default for SSR
+  });
   const [debouncedSearchQuery] = useDebounce(searchQuery, 300);
   const [showBanner, setShowBanner] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -1006,7 +1020,16 @@ export default function Home() {
                         : []),
                     ]}
                     selected={selectedSources}
-                    onChange={handleSourcesChange}
+                    onChange={(sources) => {
+                      // Save to localStorage when sources change
+                      if (typeof window !== "undefined") {
+                        localStorage.setItem(
+                          "selectedSources",
+                          JSON.stringify(sources)
+                        );
+                      }
+                      handleSourcesChange(sources);
+                    }}
                     placeholder="Select sources..."
                   />
                 </div>
@@ -1061,12 +1084,25 @@ export default function Home() {
                     type="text"
                     placeholder="Search jobs by role, company, or location..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e) => {
+                      const newValue = e.target.value;
+                      setSearchQuery(newValue);
+                      // Save to localStorage when search changes
+                      if (typeof window !== "undefined") {
+                        localStorage.setItem("searchQuery", newValue);
+                      }
+                    }}
                     className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                   {searchQuery && (
                     <button
-                      onClick={() => setSearchQuery("")}
+                      onClick={() => {
+                        setSearchQuery("");
+                        // Also clear from localStorage
+                        if (typeof window !== "undefined") {
+                          localStorage.removeItem("searchQuery");
+                        }
+                      }}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     >
                       <X className="h-4 w-4" />
