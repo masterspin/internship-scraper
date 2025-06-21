@@ -226,9 +226,17 @@ export default function Home() {
                 jobPost.source === "LinkedIn" && jobPost.job_type === "SWE"
             )
             .sort((a, b) => {
+              // First sort by date
               const dateA: any = new Date(a.date);
               const dateB: any = new Date(b.date);
-              return dateB - dateA;
+              const dateDiff = dateB - dateA;
+              
+              // If dates are equal, sort by company name
+              if (dateDiff === 0) {
+                return a.company_name.localeCompare(b.company_name);
+              }
+              
+              return dateDiff;
             });
           break;
         case 1:
@@ -285,7 +293,14 @@ export default function Home() {
           filteredData = customJobPosts.sort((a, b) => {
             const dateA: any = new Date(a.date);
             const dateB: any = new Date(b.date);
-            return dateB - dateA;
+            const dateDiff = dateB - dateA;
+            
+            // If dates are equal, sort by company name
+            if (dateDiff === 0) {
+              return a.company_name.localeCompare(b.company_name);
+            }
+            
+            return dateDiff;
           });
           break;
         case 5:
@@ -297,7 +312,14 @@ export default function Home() {
             .sort((a, b) => {
               const dateA: any = new Date(a.date);
               const dateB: any = new Date(b.date);
-              return dateB - dateA;
+              const dateDiff = dateB - dateA;
+              
+              // If dates are equal, sort by company name
+              if (dateDiff === 0) {
+                return a.company_name.localeCompare(b.company_name);
+              }
+              
+              return dateDiff;
             });
           break;
         case 6:
@@ -309,7 +331,14 @@ export default function Home() {
             .sort((a, b) => {
               const dateA: any = new Date(a.date);
               const dateB: any = new Date(b.date);
-              return dateB - dateA;
+              const dateDiff = dateB - dateA;
+              
+              // If dates are equal, sort by company name
+              if (dateDiff === 0) {
+                return a.company_name.localeCompare(b.company_name);
+              }
+              
+              return dateDiff;
             });
           break;
         case 7:
@@ -338,7 +367,14 @@ export default function Home() {
             .sort((a, b) => {
               const dateA: any = new Date(a.date);
               const dateB: any = new Date(b.date);
-              return dateB - dateA;
+              const dateDiff = dateB - dateA;
+              
+              // If dates are equal, sort by company name
+              if (dateDiff === 0) {
+                return a.company_name.localeCompare(b.company_name);
+              }
+              
+              return dateDiff;
             });
           break;
         case 9:
@@ -350,7 +386,14 @@ export default function Home() {
             .sort((a, b) => {
               const dateA: any = new Date(a.date);
               const dateB: any = new Date(b.date);
-              return dateB - dateA;
+              const dateDiff = dateB - dateA;
+              
+              // If dates are equal, sort by company name
+              if (dateDiff === 0) {
+                return a.company_name.localeCompare(b.company_name);
+              }
+              
+              return dateDiff;
             });
           break;
         case 10:
@@ -381,6 +424,11 @@ export default function Home() {
   };
 
   const handleSourcesChange = (sources: (string | number)[]) => {
+    // Save selected sources to localStorage
+    if (typeof window !== "undefined") {
+      localStorage.setItem("selectedSources", JSON.stringify(sources));
+    }
+    
     setSelectedSources(sources);
     setHasStatus(false);
     setIsLoading(true);
@@ -411,7 +459,14 @@ export default function Home() {
             .sort((a, b) => {
               const dateA: any = new Date(a.date);
               const dateB: any = new Date(b.date);
-              return dateB - dateA;
+              const dateDiff = dateB - dateA;
+              
+              // If dates are equal, sort by company name
+              if (dateDiff === 0) {
+                return a.company_name.localeCompare(b.company_name);
+              }
+              
+              return dateDiff;
             });
           break;
         case 1:
@@ -428,7 +483,16 @@ export default function Home() {
 
               const dateA = parseDate(a.date);
               const dateB = parseDate(b.date);
-              return dateA - dateB;
+              
+              // Primary sort by date
+              const dateDiff = dateA - dateB;
+              
+              // If dates are equal, sort by company name
+              if (dateDiff === 0) {
+                return a.company_name.localeCompare(b.company_name);
+              }
+              
+              return dateDiff;
             });
           break;
         case 2:
@@ -560,7 +624,7 @@ export default function Home() {
       }
     });
 
-    // Sort the combined data by date
+    // Sort the combined data consistently by date first, then alphabetically by company
     combinedData = sortCombinedJobPosts(combinedData);
 
     // Set most recently selected button for backward compatibility
@@ -672,16 +736,17 @@ export default function Home() {
         ...originalPost,
         _timestamp: timestamp,
         _originalDate: post.date, // Keep original for debugging
+        _sortKey: `${post.company_name}_${post.job_role}` // Add a stable sort key that doesn't change with status
       };
     });
 
-    // Sort by timestamp (newest first)
+    // Sort by timestamp (newest first) then by company name alphabetically for same dates
     return postsWithTimestamps
       .sort((a, b) => {
         // Primary sort by timestamp (newest first)
         const timestampDiff = b._timestamp - a._timestamp;
 
-        // If timestamps are equal, fallback to company name
+        // If timestamps are equal, sort alphabetically by company name
         if (timestampDiff === 0) {
           return a.company_name.localeCompare(b.company_name);
         }
@@ -690,7 +755,7 @@ export default function Home() {
       })
       .map((post) => {
         // Remove the temporary fields
-        const { _timestamp, _originalDate, ...cleanPost } = post;
+        const { _timestamp, _originalDate, _sortKey, ...cleanPost } = post;
         return cleanPost;
       });
   };
