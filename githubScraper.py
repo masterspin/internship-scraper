@@ -252,7 +252,7 @@ githubScraper("https://github.com/SimplifyJobs/Summer2025-Internships", "PittCSC
 githubOffSeasonScraper("https://github.com/SimplifyJobs/Summer2025-Internships/blob/dev/README-Off-Season.md", "PittCSC Off-Season")
 # cscareersScraper("https://raw.githubusercontent.com/vanshb03/Summer2025-Internships/refs/heads/dev/README.md", "CSCareers")
 # cscareersScraper("https://raw.githubusercontent.com/vanshb03/Summer2025-Internships/refs/heads/dev/OFFSEASON_README.md", "CSCareers Off-Season")
-# githubScraper("https://github.com/SimplifyJobs/New-Grad-Positions", "PittCSC New Grad")
+githubScraper("https://github.com/SimplifyJobs/New-Grad-Positions", "PittCSC New Grad")
 # print(job_post_data)
 
 for job_post in job_post_data:
