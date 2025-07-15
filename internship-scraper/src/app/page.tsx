@@ -75,7 +75,114 @@ export default function Home() {
   const [itemsPerPage, setItemsPerPage] = useState(50); // Show 50 items per page
   const [totalItems, setTotalItems] = useState(0);
 
+  // Bulk selection state
+  const [selectedJobs, setSelectedJobs] = useState<Set<string>>(new Set());
+  const [showBulkActions, setShowBulkActions] = useState(false);
+  const [bulkStatus, setBulkStatus] = useState<string>("");
+  const [lastSelectedIndex, setLastSelectedIndex] = useState<number>(-1);
+
   const { isFetching, data } = useUser();
+
+  // Bulk selection handlers
+  const handleJobSelect = (
+    jobId: string,
+    isSelected: boolean,
+    index: number,
+    isShiftClick: boolean = false
+  ) => {
+    const newSelected = new Set(selectedJobs);
+
+    if (isShiftClick && lastSelectedIndex !== -1) {
+      // Shift-click: select range from last selected to current
+      const startIndex = Math.min(lastSelectedIndex, index);
+      const endIndex = Math.max(lastSelectedIndex, index);
+
+      // Select all jobs in the range
+      for (let i = startIndex; i <= endIndex; i++) {
+        if (i < shownPosts.length) {
+          newSelected.add(shownPosts[i].job_link);
+        }
+      }
+    } else {
+      // Normal click: toggle single selection
+      if (isSelected) {
+        newSelected.add(jobId);
+      } else {
+        newSelected.delete(jobId);
+      }
+      // Update last selected index only for normal clicks
+      setLastSelectedIndex(index);
+    }
+
+    setSelectedJobs(newSelected);
+    setShowBulkActions(newSelected.size > 0);
+  };
+
+  const handleSelectAll = (isSelected: boolean) => {
+    if (isSelected) {
+      const allJobIds = new Set(shownPosts.map((post) => post.job_link));
+      setSelectedJobs(allJobIds);
+      setShowBulkActions(true);
+    } else {
+      setSelectedJobs(new Set());
+      setShowBulkActions(false);
+    }
+    // Reset last selected index when selecting/deselecting all
+    setLastSelectedIndex(-1);
+  };
+
+  const handleBulkStatusChange = async () => {
+    if (!bulkStatus || selectedJobs.size === 0) return;
+
+    const jobIds = Array.from(selectedJobs);
+
+    // Update UI immediately for better UX
+    const updatePosts = (posts: any[]) =>
+      posts.map((post) =>
+        jobIds.includes(post.job_link) ? { ...post, status: bulkStatus } : post
+      );
+
+    setShownPosts(updatePosts(shownPosts));
+    setFilteredJobPosts(updatePosts(filteredJobPosts));
+    setJobPosts(updatePosts(jobPosts));
+    setCustomJobPosts(updatePosts(customJobPosts));
+
+    // Update database for each selected job
+    if (data) {
+      try {
+        const promises = jobIds.map(async (jobId) => {
+          if (selectedButton === 4) {
+            // Custom applications
+            return supabase
+              .from("custom_applications")
+              .upsert({ user: data.id, job_link: jobId, status: bulkStatus });
+          } else {
+            // Regular job posts
+            return supabase
+              .from("statuses")
+              .upsert({ user: data.id, job: jobId, status: bulkStatus });
+          }
+        });
+
+        await Promise.all(promises);
+      } catch (error: any) {
+        console.error("Error updating bulk job statuses:", error.message);
+      }
+    }
+
+    // Clear selection
+    setSelectedJobs(new Set());
+    setShowBulkActions(false);
+    setBulkStatus("");
+    setLastSelectedIndex(-1);
+  };
+
+  const clearSelection = () => {
+    setSelectedJobs(new Set());
+    setShowBulkActions(false);
+    setBulkStatus("");
+    setLastSelectedIndex(-1);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -230,12 +337,12 @@ export default function Home() {
               const dateA: any = new Date(a.date);
               const dateB: any = new Date(b.date);
               const dateDiff = dateB - dateA;
-              
+
               // If dates are equal, sort by company name
               if (dateDiff === 0) {
                 return a.company_name.localeCompare(b.company_name);
               }
-              
+
               return dateDiff;
             });
           break;
@@ -294,12 +401,12 @@ export default function Home() {
             const dateA: any = new Date(a.date);
             const dateB: any = new Date(b.date);
             const dateDiff = dateB - dateA;
-            
+
             // If dates are equal, sort by company name
             if (dateDiff === 0) {
               return a.company_name.localeCompare(b.company_name);
             }
-            
+
             return dateDiff;
           });
           break;
@@ -313,12 +420,12 @@ export default function Home() {
               const dateA: any = new Date(a.date);
               const dateB: any = new Date(b.date);
               const dateDiff = dateB - dateA;
-              
+
               // If dates are equal, sort by company name
               if (dateDiff === 0) {
                 return a.company_name.localeCompare(b.company_name);
               }
-              
+
               return dateDiff;
             });
           break;
@@ -332,12 +439,12 @@ export default function Home() {
               const dateA: any = new Date(a.date);
               const dateB: any = new Date(b.date);
               const dateDiff = dateB - dateA;
-              
+
               // If dates are equal, sort by company name
               if (dateDiff === 0) {
                 return a.company_name.localeCompare(b.company_name);
               }
-              
+
               return dateDiff;
             });
           break;
@@ -368,12 +475,12 @@ export default function Home() {
               const dateA: any = new Date(a.date);
               const dateB: any = new Date(b.date);
               const dateDiff = dateB - dateA;
-              
+
               // If dates are equal, sort by company name
               if (dateDiff === 0) {
                 return a.company_name.localeCompare(b.company_name);
               }
-              
+
               return dateDiff;
             });
           break;
@@ -387,12 +494,12 @@ export default function Home() {
               const dateA: any = new Date(a.date);
               const dateB: any = new Date(b.date);
               const dateDiff = dateB - dateA;
-              
+
               // If dates are equal, sort by company name
               if (dateDiff === 0) {
                 return a.company_name.localeCompare(b.company_name);
               }
-              
+
               return dateDiff;
             });
           break;
@@ -428,7 +535,7 @@ export default function Home() {
     if (typeof window !== "undefined") {
       localStorage.setItem("selectedSources", JSON.stringify(sources));
     }
-    
+
     setSelectedSources(sources);
     setHasStatus(false);
     setIsLoading(true);
@@ -460,12 +567,12 @@ export default function Home() {
               const dateA: any = new Date(a.date);
               const dateB: any = new Date(b.date);
               const dateDiff = dateB - dateA;
-              
+
               // If dates are equal, sort by company name
               if (dateDiff === 0) {
                 return a.company_name.localeCompare(b.company_name);
               }
-              
+
               return dateDiff;
             });
           break;
@@ -483,15 +590,15 @@ export default function Home() {
 
               const dateA = parseDate(a.date);
               const dateB = parseDate(b.date);
-              
+
               // Primary sort by date
               const dateDiff = dateA - dateB;
-              
+
               // If dates are equal, sort by company name
               if (dateDiff === 0) {
                 return a.company_name.localeCompare(b.company_name);
               }
-              
+
               return dateDiff;
             });
           break;
@@ -736,7 +843,7 @@ export default function Home() {
         ...originalPost,
         _timestamp: timestamp,
         _originalDate: post.date, // Keep original for debugging
-        _sortKey: `${post.company_name}_${post.job_role}` // Add a stable sort key that doesn't change with status
+        _sortKey: `${post.company_name}_${post.job_role}`, // Add a stable sort key that doesn't change with status
       };
     });
 
@@ -946,6 +1053,14 @@ export default function Home() {
     hasStatus,
     isLoading,
   ]);
+
+  // Clear selection when data changes or when switching sources
+  useEffect(() => {
+    setSelectedJobs(new Set());
+    setShowBulkActions(false);
+    setBulkStatus("");
+    setLastSelectedIndex(-1);
+  }, [selectedSources, filterOption, debouncedSearchQuery, currentPage]);
 
   if (isFetching) {
     return <></>;
@@ -1187,6 +1302,66 @@ export default function Home() {
 
           <Card>
             <CardContent className="p-0 overflow-x-auto">
+              {/* Bulk Actions Bar */}
+              {showBulkActions && data && (
+                <div className="bg-blue-50 dark:bg-blue-950 border-b px-4 py-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <span className="text-sm font-medium">
+                        {selectedJobs.size} job
+                        {selectedJobs.size !== 1 ? "s" : ""} selected
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        (Tip: Use Shift+click to select multiple jobs)
+                      </span>
+                      <div className="flex items-center space-x-2">
+                        <Select
+                          value={bulkStatus}
+                          onValueChange={setBulkStatus}
+                        >
+                          <SelectTrigger className="w-40">
+                            <SelectValue placeholder="Change status to..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Not Applied">
+                              Not Applied
+                            </SelectItem>
+                            <SelectItem value="Applied">Applied</SelectItem>
+                            <SelectItem value="OA Received">
+                              OA Received
+                            </SelectItem>
+                            <SelectItem value="Interview Scheduled">
+                              Interview Scheduled
+                            </SelectItem>
+                            <SelectItem value="Waitlisted">
+                              Waitlisted
+                            </SelectItem>
+                            <SelectItem value="Rejected">Rejected</SelectItem>
+                            <SelectItem value="Offer Received">
+                              Offer Received
+                            </SelectItem>
+                            <SelectItem value="Accepted">Accepted</SelectItem>
+                            <SelectItem value="Will Not Apply">
+                              Will Not Apply
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Button
+                          onClick={handleBulkStatusChange}
+                          disabled={!bulkStatus}
+                          size="sm"
+                        >
+                          Apply
+                        </Button>
+                      </div>
+                    </div>
+                    <Button onClick={clearSelection} variant="ghost" size="sm">
+                      Clear Selection
+                    </Button>
+                  </div>
+                </div>
+              )}
+
               {isLoading ? (
                 <div className="flex justify-center items-center p-8">
                   <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -1337,17 +1512,38 @@ export default function Home() {
 
                   <div className="block md:hidden">
                     {/* Mobile view - card-based layout */}
-                    {shownPosts.map((shownPost: any) => (
+                    {shownPosts.map((shownPost: any, index: number) => (
                       <div key={shownPost.id} className="p-4 border-b">
                         <div className="flex justify-between items-start mb-2">
-                          <div className="font-medium">
-                            <Link
-                              href={shownPost.job_link}
-                              target="_blank"
-                              className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-                            >
-                              {shownPost.job_role}
-                            </Link>
+                          <div className="flex items-center space-x-3">
+                            {data && (
+                              <input
+                                type="checkbox"
+                                checked={selectedJobs.has(shownPost.job_link)}
+                                onChange={(e) => {
+                                  // We'll handle the shift detection in onClick
+                                }}
+                                onClick={(e) => {
+                                  const checkbox = e.target as HTMLInputElement;
+                                  handleJobSelect(
+                                    shownPost.job_link,
+                                    !selectedJobs.has(shownPost.job_link), // Toggle based on current state
+                                    index,
+                                    e.shiftKey
+                                  );
+                                }}
+                                className="rounded border-gray-300"
+                              />
+                            )}
+                            <div className="font-medium">
+                              <Link
+                                href={shownPost.job_link}
+                                target="_blank"
+                                className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                              >
+                                {shownPost.job_role}
+                              </Link>
+                            </div>
                           </div>
                           {data && selectedButton === 4 && (
                             <div className="flex space-x-2">
@@ -1436,6 +1632,30 @@ export default function Home() {
                   <Table className="hidden md:table">
                     <TableHeader className="bg-muted">
                       <TableRow>
+                        {data && (
+                          <TableHead className="w-12">
+                            <div className="flex flex-col items-center">
+                              <input
+                                type="checkbox"
+                                checked={
+                                  selectedJobs.size === shownPosts.length &&
+                                  shownPosts.length > 0
+                                }
+                                onChange={(e) =>
+                                  handleSelectAll(e.target.checked)
+                                }
+                                className="rounded border-gray-300"
+                                title="Select all visible jobs"
+                              />
+                              <span
+                                className="text-xs text-muted-foreground mt-1"
+                                title="Hold Shift and click to select multiple jobs"
+                              >
+                                Shift+Click
+                              </span>
+                            </div>
+                          </TableHead>
+                        )}
                         {data && selectedButton === 4 && (
                           <TableHead className="w-[100px]">Actions</TableHead>
                         )}
@@ -1451,7 +1671,7 @@ export default function Home() {
                       {shownPosts.length === 0 ? (
                         <TableRow>
                           <TableCell
-                            colSpan={data ? (selectedButton === 4 ? 6 : 5) : 4}
+                            colSpan={data ? (selectedButton === 4 ? 7 : 6) : 4}
                             className="h-24 text-center text-muted-foreground"
                           >
                             {searchQuery
@@ -1460,8 +1680,30 @@ export default function Home() {
                           </TableCell>
                         </TableRow>
                       ) : (
-                        shownPosts.map((shownPost: any) => (
+                        shownPosts.map((shownPost: any, index: number) => (
                           <TableRow key={shownPost.id}>
+                            {data && (
+                              <TableCell>
+                                <input
+                                  type="checkbox"
+                                  checked={selectedJobs.has(shownPost.job_link)}
+                                  onChange={(e) => {
+                                    // We'll handle the shift detection in onClick
+                                  }}
+                                  onClick={(e) => {
+                                    const checkbox =
+                                      e.target as HTMLInputElement;
+                                    handleJobSelect(
+                                      shownPost.job_link,
+                                      !selectedJobs.has(shownPost.job_link), // Toggle based on current state
+                                      index,
+                                      e.shiftKey
+                                    );
+                                  }}
+                                  className="rounded border-gray-300"
+                                />
+                              </TableCell>
+                            )}
                             {data && selectedButton === 4 && (
                               <TableCell>
                                 <div className="flex space-x-2">
