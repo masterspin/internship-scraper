@@ -340,7 +340,9 @@ export default function Home() {
 
               // If dates are equal, sort by company name
               if (dateDiff === 0) {
-                return a.company_name.localeCompare(b.company_name);
+                const nameA = a.company_name ?? "";
+                const nameB = b.company_name ?? "";
+                return nameA.localeCompare(nameB);
               }
 
               return dateDiff;
@@ -404,7 +406,9 @@ export default function Home() {
 
             // If dates are equal, sort by company name
             if (dateDiff === 0) {
-              return a.company_name.localeCompare(b.company_name);
+              const nameA = a.company_name ?? "";
+              const nameB = b.company_name ?? "";
+              return nameA.localeCompare(nameB);
             }
 
             return dateDiff;
@@ -423,7 +427,9 @@ export default function Home() {
 
               // If dates are equal, sort by company name
               if (dateDiff === 0) {
-                return a.company_name.localeCompare(b.company_name);
+                const nameA = a.company_name ?? "";
+                const nameB = b.company_name ?? "";
+                return nameA.localeCompare(nameB);
               }
 
               return dateDiff;
@@ -442,7 +448,9 @@ export default function Home() {
 
               // If dates are equal, sort by company name
               if (dateDiff === 0) {
-                return a.company_name.localeCompare(b.company_name);
+                const nameA = a.company_name ?? "";
+                const nameB = b.company_name ?? "";
+                return nameA.localeCompare(nameB);
               }
 
               return dateDiff;
@@ -478,7 +486,9 @@ export default function Home() {
 
               // If dates are equal, sort by company name
               if (dateDiff === 0) {
-                return a.company_name.localeCompare(b.company_name);
+                const nameA = a.company_name ?? "";
+                const nameB = b.company_name ?? "";
+                return nameA.localeCompare(nameB);
               }
 
               return dateDiff;
@@ -497,7 +507,9 @@ export default function Home() {
 
               // If dates are equal, sort by company name
               if (dateDiff === 0) {
-                return a.company_name.localeCompare(b.company_name);
+                const nameA = a.company_name ?? "";
+                const nameB = b.company_name ?? "";
+                return nameA.localeCompare(nameB);
               }
 
               return dateDiff;
@@ -570,7 +582,9 @@ export default function Home() {
 
               // If dates are equal, sort by company name
               if (dateDiff === 0) {
-                return a.company_name.localeCompare(b.company_name);
+                const nameA = a.company_name ?? "";
+                const nameB = b.company_name ?? "";
+                return nameA.localeCompare(nameB);
               }
 
               return dateDiff;
@@ -596,7 +610,9 @@ export default function Home() {
 
               // If dates are equal, sort by company name
               if (dateDiff === 0) {
-                return a.company_name.localeCompare(b.company_name);
+                const nameA = a.company_name ?? "";
+                const nameB = b.company_name ?? "";
+                return nameA.localeCompare(nameB);
               }
 
               return dateDiff;
@@ -855,7 +871,9 @@ export default function Home() {
 
         // If timestamps are equal, sort alphabetically by company name
         if (timestampDiff === 0) {
-          return a.company_name.localeCompare(b.company_name);
+          const nameA = a.company_name ?? "";
+          const nameB = b.company_name ?? "";
+          return nameA.localeCompare(nameB);
         }
 
         return timestampDiff;

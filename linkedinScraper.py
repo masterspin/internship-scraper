@@ -15,15 +15,11 @@ supabase: Client = create_client(url, key)
 swe_queries = [
     "software engineer intern",
     "backend engineer intern",
-    "mobile engineer intern",
-    "full stack developer intern",
-    "computer vision intern",
 ]
 
 quant_queries = [
     "quantitative developer intern",
     "quantitative trading intern",
-    "quantitative analysis intern",
 ]
 
 # bus_queries = [
@@ -99,7 +95,7 @@ def getJobData(jobType):
         if (jobType == "BUS") and any(word in job_post["job_role"].lower() for word in ["hr", "human resources", "front desk", "reception", "admin", "train", "unpaid"]):
             continue
 
-        if(jobType == "BUS") and "2025" not in job_post["job_role"].lower():
+        if "2026" not in job_post["job_role"].lower():
             continue
 
 

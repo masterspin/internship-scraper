@@ -27,9 +27,20 @@ def githubScraper(repoLink, repoName):
 
     for internship in soup.select("article table tbody tr"):
         internship_details = internship.find_all("td")
-        date = internship_details[4].string
+        date = ""
 
-        links = internship_details[3].find_all("a")
+        try:
+            date = internship_details[4].string
+        except:
+            date = ""
+
+        links = []
+
+        try:
+            links = internship_details[3].find_all("a")
+        except:
+            links = []
+
         if(len(links) > 0):
             job_link_exists = any(links[0].get("href") == item.get('job_link') for item in current_database)
             if(not job_link_exists):
@@ -85,10 +96,11 @@ def githubScraper(repoLink, repoName):
                     job_post["term"] = ""
                 
                 try:
-                    job_post["date"] = date
+                    job_post["date"] = date 
                 except:
                     job_post["date"] = ""
                 
+                print(job_post)
                 job_post_data.append(job_post)
 
 
